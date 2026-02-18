@@ -7,20 +7,19 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Inter:wght@300;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
         :root { 
-            --burgundy: #4a010d; 
-            --accent: #ff003c;
-            --black: #050505;
-            --glass: rgba(15, 15, 15, 0.9);
+            --burgundy: #4a010d; --accent: #ff003c; --black: #050505; --glass: rgba(15, 15, 15, 0.9);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             background: radial-gradient(circle at center, var(--burgundy) 0%, var(--black) 100%);
-            background-attachment: fixed;
-            color: white; font-family: 'Outfit', sans-serif; overflow-x: hidden; cursor: none;
+            background-attachment: fixed; color: white; font-family: 'Outfit', sans-serif; overflow-x: hidden; cursor: none;
         }
 
         /* Cursor */
@@ -29,8 +28,7 @@
 
         /* Navbar */
         nav { 
-            position: fixed; top: 0; width: 100%; padding: 25px 50px; 
-            display: flex; justify-content: space-between; align-items: center; z-index: 1000;
+            position: fixed; top: 0; width: 100%; padding: 25px 50px; display: flex; justify-content: space-between; align-items: center; z-index: 1000;
             background: rgba(0,0,0,0.3); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .nav-links { display: flex; gap: 30px; position: absolute; left: 50%; transform: translateX(-50%); }
@@ -38,51 +36,51 @@
         .nav-links a:hover { opacity: 1; color: var(--accent); }
         .logo { font-size: 1.2rem; font-weight: 600; letter-spacing: 5px; }
 
-        /* Hero Section */
-        .hero { height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .hero h1 { font-size: 5rem; letter-spacing: -2px; margin-bottom: 10px; }
+        /* Hero */
+        .hero { height: 85vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .hero h1 { font-size: 5.5rem; letter-spacing: -2px; margin-bottom: 10px; }
         .hero p { opacity: 0.5; font-size: 1.1rem; font-family: 'Inter'; }
 
-        /* Philosophy Section */
-        .philosophy { padding: 100px 15%; text-align: center; background: rgba(0,0,0,0.2); }
+        /* Philosophy */
+        .philosophy { padding: 120px 15%; text-align: center; background: rgba(0,0,0,0.2); }
         .philosophy h2 { font-size: 0.8rem; letter-spacing: 5px; color: var(--accent); margin-bottom: 20px; }
         .philosophy p { font-size: 1.8rem; line-height: 1.4; font-weight: 300; opacity: 0.9; }
 
-        /* Gallery Section */
+        /* Gallery */
         .gallery-label { text-align: center; padding-top: 100px; font-size: 0.7rem; letter-spacing: 10px; opacity: 0.3; }
         .gallery { padding: 50px 10% 150px; display: flex; flex-direction: column; align-items: center; }
         .project-card { margin-bottom: 120px; text-align: center; width: 100%; }
-        .v-wrap { border-radius: 20px; overflow: hidden; background: #000; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 40px 80px rgba(0,0,0,0.6); }
-        .size-9-16 { width: 300px; aspect-ratio: 9/16; margin: 0 auto; }
-        .size-16-9 { width: 100%; max-width: 800px; aspect-ratio: 16/9; margin: 0 auto; }
+        .v-wrap { border-radius: 20px; overflow: hidden; background: #000; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 40px 80px rgba(0,0,0,0.6); transition: 0.5s ease; }
+        .v-wrap:hover { border-color: var(--accent); transform: scale(1.01); }
+        .size-9-16 { width: 320px; aspect-ratio: 9/16; margin: 0 auto; }
+        .size-16-9 { width: 100%; max-width: 850px; aspect-ratio: 16/9; margin: 0 auto; }
         video { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Contact Section */
-        #contact-section { padding: 100px 0; display: flex; flex-direction: column; align-items: center; }
-        .contact-box { width: 450px; padding: 40px; background: rgba(255,255,255,0.03); border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); }
-        .contact-box input, .contact-box textarea { width: 100%; padding: 15px; margin: 10px 0; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 12px; outline: none; }
-        .whatsapp-btn { width: 100%; padding: 18px; background: #25d366; color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 15px; }
+        /* Contact */
+        #contact-section { padding: 150px 0; display: flex; flex-direction: column; align-items: center; background: rgba(0,0,0,0.3); }
+        .contact-box { width: 450px; padding: 45px; background: var(--glass); border-radius: 30px; border: 1px solid rgba(255,255,255,0.05); }
+        .contact-box input, .contact-box textarea { width: 100%; padding: 15px; margin: 10px 0; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 12px; outline: none; }
+        .whatsapp-btn { width: 100%; padding: 18px; background: #25d366; color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 15px; transition: 0.3s; }
+        .whatsapp-btn:hover { background: #1da851; transform: translateY(-3px); }
 
-        /* Secret Admin Panel */
+        /* Admin Engine */
         #admin-panel { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 50000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(25px); cursor: auto; }
         .studio-card { background: var(--glass); width: 480px; border-radius: 30px; padding: 40px; border: 1px solid var(--burgundy); max-height: 90vh; overflow-y: auto; }
-        .input-wrapper { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 12px 15px; margin-bottom: 15px; }
+        .input-wrapper { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 12px 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
         .input-wrapper label { display: block; font-size: 10px; color: var(--accent); letter-spacing: 1px; margin-bottom: 5px; font-weight: 700; }
-        .input-wrapper input, .input-wrapper select { width: 100%; background: transparent; border: none; color: white; outline: none; font-size: 0.9rem; }
+        .input-wrapper input, .input-wrapper select { width: 100%; background: transparent; border: none; color: white; outline: none; }
 
-        /* Video Modal */
+        /* Video Player */
         #video-modal { position: fixed; inset: 0; background: #000; z-index: 60000; display: none; align-items: center; justify-content: center; cursor: auto; }
-        .close-vid { position: fixed; top: 30px; right: 40px; font-size: 2.5rem; color: white; cursor: pointer; z-index: 60001; }
-        #full-player { max-width: 100%; max-height: 100%; }
+        .close-vid { position: fixed; top: 30px; right: 40px; font-size: 3rem; color: white; cursor: pointer; z-index: 60001; opacity: 0.5; transition: 0.3s; }
+        .close-vid:hover { opacity: 1; color: var(--accent); }
         
-        /* Manage List */
-        .manage-item { display: flex; justify-content: space-between; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 10px; margin-top: 10px; font-size: 11px; }
+        .manage-item { display: flex; justify-content: space-between; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-top: 10px; font-size: 11px; }
     </style>
 </head>
 <body>
 
-    <div class="cursor"></div>
-    <div class="cursor-f"></div>
+    <div class="cursor"></div><div class="cursor-f"></div>
 
     <nav>
         <div class="logo">GLYDRA</div>
@@ -109,7 +107,7 @@
 
         <section id="contact-section">
             <div class="contact-box">
-                <h2 style="text-align: center; margin-bottom: 30px;">START YOUR RENDER</h2>
+                <h2 style="text-align: center; margin-bottom: 30px; letter-spacing: 2px;">START YOUR RENDER</h2>
                 <input type="text" id="c-name" placeholder="Full Name">
                 <textarea id="c-task" placeholder="Project details..." rows="4"></textarea>
                 <button class="whatsapp-btn" onclick="sendWhatsApp()">SEND TO WHATSAPP</button>
@@ -121,16 +119,16 @@
         <div class="studio-card">
             <h3 style="text-align:center; color:var(--accent); margin-bottom:25px; letter-spacing:4px;">ENGINE CONTROL</h3>
             <div class="input-wrapper"><label>PROJECT NAME</label><input type="text" id="v-name"></div>
-            <div class="input-wrapper"><label>PREVIEW VIDEO URL</label><input type="text" id="v-short-url" placeholder="https://..."></div>
-            <div class="input-wrapper"><label>MASTER VIDEO URL</label><input type="text" id="v-full-url" placeholder="https://..."></div>
+            <div class="input-wrapper"><label>PREVIEW MP4 URL</label><input type="text" id="v-short-url"></div>
+            <div class="input-wrapper"><label>FULL FILM MP4 URL</label><input type="text" id="v-full-url"></div>
             <div class="input-wrapper">
-                <label>LAYOUT SIZE</label>
+                <label>SIZE</label>
                 <select id="v-size">
                     <option value="size-9-16">VERTICAL (9:16)</option>
                     <option value="size-16-9">WIDE (16:9)</option>
                 </select>
             </div>
-            <button onclick="saveProject()" style="width:100%; padding:18px; background:white; color:black; font-weight:700; border-radius:15px; cursor:pointer; border:none;">DEPLOY PROJECT</button>
+            <button onclick="saveToFirebase()" style="width:100%; padding:18px; background:white; color:black; font-weight:700; border-radius:15px; cursor:pointer; border:none;">DEPLOY LIVE</button>
             <div id="manage-list"></div>
             <p onclick="document.getElementById('admin-panel').style.display='none'" style="text-align:center; margin-top:20px; font-size:10px; opacity:0.3; cursor:pointer;">DISMISS</p>
         </div>
@@ -138,26 +136,25 @@
 
     <div id="video-modal">
         <div class="close-vid" onclick="closeVideo()">×</div>
-        <video id="full-player" controls autoplay></video>
+        <video id="full-player" controls autoplay style="max-width:95%; max-height:90%;"></video>
     </div>
 
     <script>
-        // تحميل البيانات المحفوظة فور فتح الموقع
-        let projects = JSON.parse(localStorage.getItem('glydra_data')) || [];
+        // بيانات Firebase الحقيقية الخاصة بك من الصورة
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTVlcGCfeDZD xLjx-j5pPutvm9tpg2wCk",
+            authDomain: "glydra-f8004.firebaseapp.com",
+            databaseURL: "https://glydra-f8004-default-rtdb.firebaseio.com",
+            projectId: "glydra-f8004",
+            storageBucket: "glydra-f8004.firebasestorage.app",
+            messagingSenderId: "9888688666",
+            appId: "1:9888688666:web:0ffb9104cfdb87b5507fa3"
+        };
 
-        window.onload = () => { renderGallery(); };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database().ref('projects');
 
-        // فتح اللوحة بزرار (=)
-        window.addEventListener('keydown', (e) => {
-            if (e.key === '=') {
-                if (prompt("KEY:") === "000") {
-                    document.getElementById('admin-panel').style.display = 'flex';
-                    renderManageList();
-                }
-            }
-        });
-
-        // الماوس
+        // Mouse
         const cur = document.querySelector('.cursor'), fol = document.querySelector('.cursor-f');
         window.addEventListener('mousemove', e => {
             gsap.to(cur, { x: e.clientX, y: e.clientY, duration: 0.1 });
@@ -167,61 +164,50 @@
             cur.style.display = fol.style.display = isSpecial ? 'none' : 'block';
         });
 
-        function saveProject() {
+        // Open Admin (=)
+        window.addEventListener('keydown', (e) => {
+            if (e.key === '=') { if (prompt("KEY:") === "000") { document.getElementById('admin-panel').style.display = 'flex'; renderList(); } }
+        });
+
+        function saveToFirebase() {
             const name = document.getElementById('v-name').value;
             const shortUrl = document.getElementById('v-short-url').value;
             const fullUrl = document.getElementById('v-full-url').value;
             const size = document.getElementById('v-size').value;
-
-            if(!name || !shortUrl) return alert("Missing data!");
-
-            projects.push({ name, shortUrl, fullUrl, size });
-            // حفظ البيانات في المتصفح للأبد
-            localStorage.setItem('glydra_data', JSON.stringify(projects));
-            
-            renderGallery();
+            if(name && shortUrl) db.push({ name, shortUrl, fullUrl, size });
             document.getElementById('admin-panel').style.display = 'none';
         }
 
-        function renderGallery() {
+        // تحديث المعرض لحظياً
+        db.on('value', (snap) => {
+            const data = snap.val();
             const container = document.getElementById('main-gallery');
             container.innerHTML = "";
-            projects.forEach(p => {
+            if(data) Object.keys(data).forEach(k => {
+                const p = data[k];
                 container.insertAdjacentHTML('beforeend', `
                     <div class="project-card">
                         <div class="v-wrap ${p.size}"><video autoplay muted loop playsinline><source src="${p.shortUrl}"></video></div>
-                        <h2>${p.name}</h2>
-                        <button onclick="openVideo('${p.fullUrl}')" style="padding:10px 30px; border:1px solid white; background:transparent; color:white; cursor:pointer; margin-top:15px;">WATCH FULL FILM</button>
-                    </div>
-                `);
+                        <h2 style="font-size:2rem; margin-bottom:10px;">${p.name}</h2>
+                        <button onclick="openVideo('${p.fullUrl}')" style="padding:10px 40px; border:1px solid white; background:transparent; color:white; cursor:pointer;">WATCH FULL FILM</button>
+                    </div>`);
+            });
+        });
+
+        function renderList() {
+            db.once('value', (snap) => {
+                const data = snap.val();
+                const list = document.getElementById('manage-list');
+                list.innerHTML = "";
+                if(data) Object.keys(data).forEach(k => {
+                    list.insertAdjacentHTML('beforeend', `<div class="manage-item"><span>${data[k].name}</span><span onclick="deleteP('${k}')" style="color:red; cursor:pointer;">DEL</span></div>`);
+                });
             });
         }
 
-        function renderManageList() {
-            const list = document.getElementById('manage-list');
-            list.innerHTML = "";
-            projects.forEach((p, i) => {
-                list.insertAdjacentHTML('beforeend', `<div class="manage-item"><span>${p.name}</span><span onclick="deleteProject(${i})" style="color:red; cursor:pointer;">DEL</span></div>`);
-            });
-        }
-
-        function deleteProject(i) {
-            projects.splice(i, 1);
-            localStorage.setItem('glydra_data', JSON.stringify(projects));
-            renderGallery(); renderManageList();
-        }
-
-        function openVideo(url) {
-            if(!url) return alert("No link!");
-            document.getElementById('full-player').src = url;
-            document.getElementById('video-modal').style.display = 'flex';
-        }
-
-        function closeVideo() {
-            document.getElementById('full-player').pause();
-            document.getElementById('video-modal').style.display = 'none';
-        }
-
+        function deleteP(k) { if(confirm("Delete?")) firebase.database().ref('projects/'+k).remove(); renderList(); }
+        function openVideo(url) { document.getElementById('full-player').src = url; document.getElementById('video-modal').style.display = 'flex'; }
+        function closeVideo() { document.getElementById('full-player').pause(); document.getElementById('video-modal').style.display = 'none'; }
         function sendWhatsApp() {
             const name = document.getElementById('c-name').value;
             const task = document.getElementById('c-task').value;
