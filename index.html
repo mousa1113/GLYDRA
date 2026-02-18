@@ -2,126 +2,166 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLYDRA | PREMIER STUDIO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GLYDRA | THE COMPLETE STUDIO</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Inter:wght@300;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        :root { --burgundy: #4a010d; --accent: #ff003c; --black: #050505; --glass: rgba(15, 15, 15, 0.95); }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: radial-gradient(circle at center, var(--burgundy) 0%, var(--black) 100%); background-attachment: fixed; color: white; font-family: 'Outfit', sans-serif; overflow-x: hidden; cursor: none; }
+        :root { --burgundy: #4a010d; --accent: #ff003c; --black: #050505; --glass: rgba(15, 15, 15, 0.85); }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background: var(--black); 
+            color: white; 
+            font-family: 'Outfit', sans-serif; 
+            overflow-x: hidden;
+        }
 
-        /* Cursor */
-        .cursor { width: 6px; height: 6px; background: #fff; border-radius: 50%; position: fixed; z-index: 10000; pointer-events: none; }
-        .cursor-f { width: 25px; height: 25px; border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; position: fixed; z-index: 9999; pointer-events: none; }
+        /* Animated Background */
+        .bg-overlay {
+            position: fixed; inset: 0;
+            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--burgundy) 0%, var(--black) 100%);
+            z-index: -1; opacity: 0.8; transition: background 0.2s ease;
+        }
+
+        /* PC Cursor */
+        @media (min-width: 1024px) {
+            body { cursor: none; }
+            .cursor { width: 8px; height: 8px; background: #fff; border-radius: 50%; position: fixed; z-index: 10000; pointer-events: none; mix-blend-mode: difference; }
+            .cursor-f { width: 35px; height: 35px; border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; position: fixed; z-index: 9999; pointer-events: none; transition: transform 0.1s ease; }
+        }
 
         /* Nav */
-        nav { position: fixed; top: 0; width: 100%; padding: 25px 50px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: rgba(0,0,0,0.3); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .logo { font-size: 1.2rem; font-weight: 600; letter-spacing: 5px; }
+        nav { 
+            position: fixed; top: 0; width: 100%; padding: 20px 40px; 
+            display: flex; justify-content: space-between; align-items: center; z-index: 1000; 
+            background: rgba(0,0,0,0.2); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .logo { font-size: 1.1rem; font-weight: 600; letter-spacing: 6px; color: #fff; text-shadow: 0 0 10px var(--accent); }
 
-        /* Sections */
-        .hero { height: 75vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .hero h1 { font-size: 5.5rem; letter-spacing: -2px; }
-        .philosophy { padding: 80px 10%; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; background: rgba(0,0,0,0.1); }
-        .phi-card { padding: 30px; border-left: 2px solid var(--accent); background: rgba(255,255,255,0.02); transition: 0.4s; }
-        .phi-card:hover { background: rgba(255,255,255,0.05); }
-        .phi-card h2 { color: var(--accent); font-size: 0.8rem; letter-spacing: 3px; margin-bottom: 10px; }
-        .phi-card p { font-size: 1.3rem; font-weight: 300; opacity: 0.8; }
+        /* Hero */
+        .hero { height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .hero h1 { font-size: clamp(3rem, 15vw, 7rem); letter-spacing: -3px; font-weight: 600; text-transform: uppercase; }
+        .hero p { opacity: 0.4; font-size: 0.9rem; letter-spacing: 5px; margin-top: 15px; font-family: 'Inter'; }
 
-        /* Gallery */
-        .gallery { padding: 100px 10%; display: flex; flex-direction: column; align-items: center; }
-        .project-card { margin-bottom: 150px; text-align: center; width: 100%; opacity: 0; transform: translateY(50px); }
-        .v-wrap { border-radius: 20px; overflow: hidden; background: #000; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.1); transition: 0.5s ease; }
-        .v-wrap:hover { border-color: var(--accent); transform: scale(1.02); }
-        .size-9-16 { width: 320px; aspect-ratio: 9/16; margin: 0 auto; }
-        .size-16-9 { width: 100%; max-width: 900px; aspect-ratio: 16/9; margin: 0 auto; }
-        video { width: 100%; height: 100%; object-fit: cover; }
+        /* Units (Philosophy) */
+        .philosophy { padding: 80px 10%; display: grid; grid-template-columns: 1fr; gap: 30px; }
+        @media (min-width: 768px) { .philosophy { grid-template-columns: 1fr 1fr; } }
+        .phi-card { 
+            padding: 40px; background: var(--glass); border: 1px solid rgba(255,255,255,0.05); 
+            border-left: 4px solid var(--accent); transition: 0.5s; 
+        }
+        .phi-card:hover { transform: translateY(-10px); background: rgba(255,255,255,0.05); border-color: var(--accent); }
+        .phi-card h2 { color: var(--accent); font-size: 0.8rem; letter-spacing: 3px; margin-bottom: 15px; }
+        .phi-card p { font-size: 1.4rem; font-weight: 300; line-height: 1.4; opacity: 0.9; }
 
-        /* Fixed Proportions Player */
+        /* Gallery - Video Scale Fixes */
+        .gallery { padding: 50px 5%; width: 100%; }
+        .project-card { margin-bottom: 150px; text-align: center; }
+        .v-wrap { 
+            border-radius: 25px; overflow: hidden; background: #000; margin-bottom: 30px; 
+            border: 1px solid rgba(255,255,255,0.1); position: relative;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+        .size-9-16 { width: 85%; max-width: 320px; aspect-ratio: 9/16; margin: 0 auto; }
+        .size-16-9 { width: 100%; max-width: 950px; aspect-ratio: 16/9; margin: 0 auto; }
+        video { width: 100%; height: 100%; object-fit: cover; transition: 0.8s; }
+        .project-card:hover video { transform: scale(1.05); }
+
+        /* Modal Player (The Scale King) */
         #video-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 60000; display: none; align-items: center; justify-content: center; }
-        .modal-content { width: 90%; height: 90%; display: flex; align-items: center; justify-content: center; }
-        #full-player { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .close-vid { position: fixed; top: 30px; right: 40px; font-size: 3rem; color: white; cursor: pointer; z-index: 60001; }
+        .modal-content { width: 95%; height: 95%; display: flex; align-items: center; justify-content: center; }
+        #full-player { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 10px; }
+        .close-vid { position: absolute; top: 30px; right: 40px; font-size: 3rem; color: white; cursor: pointer; opacity: 0.5; transition: 0.3s; }
+        .close-vid:hover { opacity: 1; transform: rotate(90deg); color: var(--accent); }
 
-        /* Admin Panels */
-        #admin-panel { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 50000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); cursor: auto; }
-        .studio-card { background: var(--glass); width: 500px; border-radius: 30px; padding: 40px; border: 1px solid var(--burgundy); max-height: 90vh; overflow-y: auto; }
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 10px; color: var(--accent); margin-bottom: 5px; font-weight: 700; }
-        .input-group input, .input-group textarea, .input-group select { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 10px; outline: none; }
-        
-        .manage-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; margin-top: 10px; }
-        .action-btns button { padding: 5px 10px; margin-left: 5px; cursor: pointer; border: none; border-radius: 5px; font-size: 10px; font-weight: 700; }
+        /* Admin & Contact */
+        .studio-card, .contact-box { background: var(--glass) !important; border-radius: 30px !important; backdrop-filter: blur(30px); border: 1px solid var(--burgundy) !important; }
+        .whatsapp-btn { background: #25d366; color: white; border: none; border-radius: 15px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .whatsapp-btn:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3); }
 
-        /* Contact */
-        #contact-section { padding: 100px 0; display: flex; flex-direction: column; align-items: center; }
-        .contact-box { width: 450px; padding: 40px; background: var(--glass); border-radius: 30px; border: 1px solid rgba(255,255,255,0.05); }
-        .whatsapp-btn { width: 100%; padding: 18px; background: #25d366; color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        /* Input Styles */
+        input, textarea, select { 
+            width: 100%; padding: 15px; margin-bottom: 15px; 
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); 
+            color: white; border-radius: 12px; outline: none; font-size: 16px;
+        }
+
+        /* Animations */
+        .reveal { opacity: 0; transform: translateY(40px); }
     </style>
 </head>
 <body>
 
+    <div class="bg-overlay"></div>
     <div class="cursor"></div><div class="cursor-f"></div>
+    
     <nav><div class="logo">GLYDRA</div></nav>
 
     <main>
-        <section class="hero"><h1>GLYDRA STUDIO</h1><p>ARCHITECTS OF MOTION</p></section>
+        <section class="hero reveal">
+            <h1>GLYDRA STUDIO</h1>
+            <p>BEYOND DIMENSIONS</p>
+        </section>
         
-        <section class="philosophy">
-            <div class="phi-card"><h2>01. 3D RENDERING</h2><p>Hyper-realistic visual storytelling through advanced geometry and light.</p></div>
-            <div class="phi-card"><h2>02. MOTION DESIGN</h2><p>Cinematic motion that brings static concepts into a fluid digital life.</p></div>
+        <section class="philosophy reveal">
+            <div class="phi-card">
+                <h2>01. 3D VISUALS</h2>
+                <p>We sculpt digital realities where light and texture define the narrative of your vision.</p>
+            </div>
+            <div class="phi-card">
+                <h2>02. MOTION CINEMA</h2>
+                <p>Advanced motion design that breathes cinematic life into static concepts.</p>
+            </div>
         </section>
 
         <section class="gallery" id="main-gallery"></section>
 
-        <section id="contact-section">
-            <div class="contact-box">
-                <h3 style="text-align:center; margin-bottom:20px; color:var(--accent);">BOOK A SESSION</h3>
-                <input type="text" id="c-name" class="input-group" placeholder="Full Name" style="width:100%; padding:15px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:10px; margin-bottom:10px;">
-                <textarea id="c-task" class="input-group" placeholder="Project Details..." rows="4" style="width:100%; padding:15px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:10px;"></textarea>
-                <button class="whatsapp-btn" onclick="sendWhatsApp()">SEND TO WHATSAPP</button>
+        <section id="contact-section" style="display:flex; justify-content:center; padding: 100px 0;">
+            <div class="contact-box reveal" style="width: 90%; max-width: 450px; padding: 40px;">
+                <h3 style="text-align:center; margin-bottom:30px; letter-spacing: 2px;">START A PROJECT</h3>
+                <input type="text" id="c-name" placeholder="Full Name">
+                <textarea id="c-task" placeholder="Your Vision..." rows="4"></textarea>
+                <button class="whatsapp-btn" style="width:100%; padding:18px;" onclick="sendWhatsApp()">BOOK VIA WHATSAPP</button>
             </div>
         </section>
     </main>
 
-    <div id="video-modal"><div class="close-vid" onclick="closeVideo()">×</div><div class="modal-content"><video id="full-player" controls autoplay playsinline></video></div></div>
+    <div id="video-modal"><div class="close-vid" onclick="closeVideo()">×</div><div class="modal-content"><video id="full-player" controls playsinline></video></div></div>
 
-    <div id="admin-panel">
-        <div class="studio-card">
-            <h3 style="text-align:center; color:var(--accent); margin-bottom:20px;">ENGINE CONTROL</h3>
-            
+    <div id="admin-panel" style="position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 50000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px);">
+        <div class="studio-card" style="width: 90%; max-width: 500px; padding: 40px; overflow-y:auto; max-height:90vh;">
+            <h3 style="text-align:center; color:var(--accent); margin-bottom:25px; letter-spacing:5px;">ENGINE v2.0</h3>
             <div id="admin-auth">
-                <div class="input-group"><label>PASSWORD</label><input type="password" id="admin-pass-input"></div>
-                <button onclick="checkPass()" style="width:100%; padding:12px; background:white; color:black; font-weight:700; border-radius:10px; cursor:pointer;">UNLOCK</button>
+                <input type="password" id="admin-pass-input" placeholder="ACCESS KEY">
+                <button onclick="checkPass()" style="width:100%; padding:15px; background:white; color:black; font-weight:700; border-radius:12px; border:none;">UNLOCK</button>
             </div>
-
             <div id="admin-main" style="display:none;">
-                <div class="input-group"><label>PROJECT NAME</label><input type="text" id="v-name"></div>
-                <div class="input-group"><label>DESCRIPTION</label><textarea id="v-desc" rows="2"></textarea></div>
-                <div class="input-group"><label>PREVIEW URL (RAW)</label><input type="text" id="v-short-url"></div>
-                <div class="input-group"><label>FULL FILM URL (RAW)</label><input type="text" id="v-full-url"></div>
-                <div class="input-group">
-                    <label>LAYOUT</label>
-                    <select id="v-size"><option value="size-9-16">VERTICAL (9:16)</option><option value="size-16-9">WIDE (16:9)</option></select>
-                </div>
-                <button id="save-btn" onclick="saveToFirebase()" style="width:100%; padding:15px; background:var(--accent); color:white; font-weight:700; border-radius:10px; cursor:pointer; border:none;">DEPLOY PROJECT</button>
-                
+                <input type="text" id="v-name" placeholder="Project Name">
+                <textarea id="v-desc" placeholder="Project Description"></textarea>
+                <input type="text" id="v-short-url" placeholder="Preview URL (MP4)">
+                <input type="text" id="v-full-url" placeholder="Full Movie URL (MP4)">
+                <select id="v-size"><option value="size-9-16">VERTICAL (9:16)</option><option value="size-16-9">WIDE (16:9)</option></select>
+                <button id="save-btn" onclick="saveToFirebase()" style="width:100%; padding:15px; background:var(--accent); color:white; border:none; border-radius:12px; font-weight:700;">DEPLOY LIVE</button>
+                <div id="manage-list" style="margin-top:25px;"></div>
                 <hr style="margin:25px 0; opacity:0.1;">
-                <div class="input-group"><label>CHANGE SYSTEM PASSWORD</label><input type="text" id="new-pass-val" placeholder="Enter new password"></div>
-                <button onclick="updatePassword()" style="width:100%; padding:10px; background:rgba(255,255,255,0.1); color:white; border-radius:10px; cursor:pointer; border:none;">UPDATE PASSWORD</button>
-                
-                <div id="manage-list"></div>
+                <label style="font-size:10px; color:var(--accent);">SECURE KEY SETTINGS</label>
+                <input type="text" id="new-pass-val" placeholder="New Access Key">
+                <button onclick="updatePassword()" style="width:100%; padding:12px; background:rgba(255,255,255,0.1); color:white; border:none; border-radius:12px;">CHANGE KEY</button>
             </div>
-            <p onclick="location.reload()" style="text-align:center; margin-top:20px; font-size:10px; opacity:0.3; cursor:pointer;">EXIT SYSTEM</p>
+            <p onclick="location.reload()" style="text-align:center; margin-top:20px; font-size:10px; opacity:0.3; cursor:pointer;">DISCONNECT</p>
         </div>
     </div>
 
     <script>
+        gsap.registerPlugin(ScrollTrigger);
+
         const firebaseConfig = {
             apiKey: "AIzaSyDTVlcGCfeDZD xLjx-j5pPutvm9tpg2wCk",
             authDomain: "glydra-f8004.firebaseapp.com",
@@ -134,37 +174,37 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database().ref('projects');
         const passRef = firebase.database().ref('adminConfig/password');
-
         let editingId = null;
 
-        // Mouse
-        const cur = document.querySelector('.cursor'), fol = document.querySelector('.cursor-f');
+        // Visual FX: Parallax & Mouse
         window.addEventListener('mousemove', e => {
-            gsap.to(cur, { x: e.clientX, y: e.clientY, duration: 0.1 });
-            gsap.to(fol, { x: e.clientX - 10, y: e.clientY - 10, duration: 0.25 });
-            const isSpecial = document.getElementById('admin-panel').style.display === 'flex' || document.getElementById('video-modal').style.display === 'flex';
-            document.body.style.cursor = isSpecial ? 'auto' : 'none';
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            document.body.style.setProperty('--mouse-x', x + '%');
+            document.body.style.setProperty('--mouse-y', y + '%');
+            
+            if (window.innerWidth > 1024) {
+                gsap.to(".cursor", { x: e.clientX, y: e.clientY, duration: 0.1 });
+                gsap.to(".cursor-f", { x: e.clientX - 14, y: e.clientY - 14, duration: 0.3 });
+            }
         });
 
-        // Admin Access
-        window.addEventListener('keydown', (e) => {
-            if (e.key === '=') document.getElementById('admin-panel').style.display = 'flex';
-        });
+        // Secret Engine Trigger
+        window.addEventListener('keydown', (e) => { if (e.key === '=') document.getElementById('admin-panel').style.display = 'flex'; });
 
         async function checkPass() {
             const input = document.getElementById('admin-pass-input').value;
             const snap = await passRef.once('value');
-            const master = snap.val() || "000"; // Default password if not set
-            if(input === master) {
+            if(input === (snap.val() || "000")) {
                 document.getElementById('admin-auth').style.display = 'none';
                 document.getElementById('admin-main').style.display = 'block';
                 renderList();
-            } else { alert("WRONG KEY"); }
+            } else alert("DENIED");
         }
 
         function updatePassword() {
-            const newPass = document.getElementById('new-pass-val').value;
-            if(newPass) { passRef.set(newPass); alert("Password Updated!"); }
+            const np = document.getElementById('new-pass-val').value;
+            if(np) { passRef.set(np); alert("Secure Key Updated"); }
         }
 
         function saveToFirebase() {
@@ -176,8 +216,8 @@
                 size: document.getElementById('v-size').value
             };
             if(editingId) { db.child(editingId).update(data); editingId = null; }
-            else { db.push(data); }
-            resetForm(); renderList();
+            else db.push(data);
+            resetEngine();
         }
 
         db.on('value', (snap) => {
@@ -187,14 +227,18 @@
             if(data) Object.keys(data).forEach(k => {
                 const p = data[k];
                 container.insertAdjacentHTML('beforeend', `
-                    <div class="project-card">
+                    <div class="project-card reveal">
                         <div class="v-wrap ${p.size}"><video autoplay muted loop playsinline><source src="${p.shortUrl}"></video></div>
                         <h2 style="font-size:2.5rem; letter-spacing:-1px;">${p.name}</h2>
-                        <p style="opacity:0.5; margin-bottom:20px; font-family:'Inter'">${p.desc || ""}</p>
-                        <button onclick="openVideo('${p.fullUrl}')" style="padding:12px 40px; border:1px solid white; background:transparent; color:white; cursor:pointer; font-weight:600;">WATCH FILM</button>
+                        <p style="opacity:0.4; font-size:0.9rem; margin:10px auto 25px; max-width:600px; font-family:'Inter'">${p.desc || ""}</p>
+                        <button onclick="openVideo('${p.fullUrl}')" style="padding:14px 45px; border:1px solid white; background:transparent; color:white; font-size:0.7rem; font-weight:600; cursor:pointer; letter-spacing:2px;">WATCH FILM</button>
                     </div>`);
             });
-            gsap.to(".project-card", { opacity: 1, y: 0, stagger: 0.3, duration: 1 });
+            
+            // GSAP Reveal Animation
+            gsap.utils.toArray(".reveal").forEach(el => {
+                gsap.to(el, { scrollTrigger: el, opacity: 1, y: 0, duration: 1.2, ease: "power4.out" });
+            });
         });
 
         function renderList() {
@@ -204,11 +248,11 @@
                 list.innerHTML = "";
                 if(data) Object.keys(data).forEach(k => {
                     list.insertAdjacentHTML('beforeend', `
-                        <div class="manage-item">
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:rgba(255,255,255,0.03); margin-bottom:8px; border-radius:10px; font-size:12px;">
                             <span>${data[k].name}</span>
-                            <div class="action-btns">
-                                <button onclick="editP('${k}')" style="background:orange;">EDIT</button>
-                                <button onclick="deleteP('${k}')" style="background:red; color:white;">DEL</button>
+                            <div>
+                                <button onclick="editP('${k}')" style="background:none; color:orange; border:none; margin-right:10px; cursor:pointer;">EDIT</button>
+                                <button onclick="deleteP('${k}')" style="background:none; color:red; border:none; cursor:pointer;">DEL</button>
                             </div>
                         </div>`);
                 });
@@ -228,14 +272,15 @@
             });
         }
 
-        function deleteP(k) { if(confirm("Delete?")) db.child(k).remove(); renderList(); }
-        function resetForm() { document.querySelectorAll('#admin-main input, #admin-main textarea').forEach(i => i.value=""); document.getElementById('save-btn').innerText = "DEPLOY PROJECT"; }
+        function deleteP(k) { if(confirm("Remove Project?")) db.child(k).remove(); renderList(); }
+        function resetEngine() { document.querySelectorAll('#admin-main input, #admin-main textarea').forEach(i => i.value=""); document.getElementById('save-btn').innerText = "DEPLOY LIVE"; renderList(); }
         function openVideo(url) { document.getElementById('full-player').src = url; document.getElementById('video-modal').style.display = 'flex'; }
         function closeVideo() { document.getElementById('full-player').pause(); document.getElementById('video-modal').style.display = 'none'; }
+        
         function sendWhatsApp() {
-            const name = document.getElementById('c-name').value;
-            const task = document.getElementById('c-task').value;
-            window.open(`https://wa.me/201280022629?text=Glydra Studio Inquiry %0A Name: ${name} %0A Project: ${task}`, '_blank');
+            const n = document.getElementById('c-name').value;
+            const t = document.getElementById('c-task').value;
+            window.open(`https://wa.me/201280022629?text=Hello Glydra Studio! %0AClient: ${n}%0ADetails: ${t}`, '_blank');
         }
     </script>
 </body>
