@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GLYDRA | CINEMATIC STUDIO</title>
+    <title>GLYDRA | THE COMPLETE STUDIO</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Inter:wght@300;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -12,101 +12,106 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        :root { --burgundy: #4a010d; --accent: #ff003c; --black: #050505; --glass: rgba(15, 15, 15, 0.9); }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --burgundy: #4a010d; --accent: #ff003c; --black: #050505; --glass: rgba(15, 15, 15, 0.95); }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body { background: var(--black); color: white; font-family: 'Outfit', sans-serif; overflow-x: hidden; }
 
-        /* Background Glow */
-        .bg-glow { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--burgundy) 0%, var(--black) 100%); z-index: -1; opacity: 0.6; }
+        /* Smooth Background */
+        .bg-layer { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--burgundy) 0%, var(--black) 100%); z-index: -1; opacity: 0.7; }
 
-        /* Smart Cursor */
-        @media (min-width: 1024px) {
+        /* Cursor - PC ONLY */
+        @media (min-width: 1025px) {
             body { cursor: none; }
             .cursor { width: 8px; height: 8px; background: #fff; border-radius: 50%; position: fixed; z-index: 10000; pointer-events: none; mix-blend-mode: difference; }
-            .cursor-f { width: 35px; height: 35px; border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; position: fixed; z-index: 9999; pointer-events: none; }
-            /* Hide custom cursor when modal is open */
+            .cursor-f { width: 30px; height: 30px; border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; position: fixed; z-index: 9999; pointer-events: none; }
             body.modal-open { cursor: auto !important; }
             body.modal-open .cursor, body.modal-open .cursor-f { display: none; }
         }
 
-        nav { position: fixed; top: 0; width: 100%; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: rgba(0,0,0,0.3); backdrop-filter: blur(20px); }
-        .logo { font-size: 1.1rem; font-weight: 600; letter-spacing: 6px; color: #fff; }
+        nav { position: fixed; top: 0; width: 100%; padding: 20px 30px; z-index: 1000; background: rgba(0,0,0,0.4); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .logo { font-size: 1rem; font-weight: 600; letter-spacing: 5px; text-align: center; width: 100%; }
 
-        .hero { height: 70vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .hero h1 { font-size: clamp(3rem, 12vw, 6rem); letter-spacing: -2px; }
+        /* Hero */
+        .hero { height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding-top: 50px; }
+        .hero h1 { font-size: clamp(2.5rem, 10vw, 6rem); letter-spacing: -2px; }
+        .hero p { opacity: 0.4; font-size: 0.8rem; letter-spacing: 4px; margin-top: 10px; }
 
-        /* Project Layout: Side by Side on Desktop */
-        .gallery { padding: 100px 5%; }
-        .project-card { 
-            display: flex; flex-direction: column; align-items: center; 
-            margin-bottom: 180px; gap: 40px; opacity: 0; transform: translateY(40px);
-        }
+        /* Philosophy (The Sections You Wanted Back) */
+        .philosophy { padding: 50px 10%; display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 768px) { .philosophy { grid-template-columns: 1fr 1fr; gap: 40px; } }
+        .phi-card { padding: 30px; border-left: 3px solid var(--accent); background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); }
+        .phi-card h2 { color: var(--accent); font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 10px; }
+        .phi-card p { font-size: 1.2rem; font-weight: 300; line-height: 1.5; opacity: 0.8; }
 
-        @media (min-width: 1024px) {
-            .project-card { flex-direction: row; text-align: left; justify-content: center; }
+        /* Gallery Layout */
+        .gallery { padding: 80px 5%; width: 100%; }
+        .project-card { display: flex; flex-direction: column; align-items: center; margin-bottom: 100px; gap: 30px; width: 100%; }
+
+        /* Desktop Side-by-Side */
+        @media (min-width: 1025px) {
+            .project-card { flex-direction: row; justify-content: center; text-align: left; }
             .project-card:nth-child(even) { flex-direction: row-reverse; }
-            .project-info { flex: 1; max-width: 400px; }
-            .v-wrap { flex: 1.5; }
+            .project-info { flex: 1; max-width: 450px; padding: 20px; }
+            .v-wrap-container { flex: 1.5; display: flex; justify-content: center; }
         }
 
-        .project-info h2 { font-size: 3rem; margin-bottom: 15px; line-height: 1; text-transform: uppercase; }
-        .project-info p { opacity: 0.5; margin-bottom: 30px; font-family: 'Inter'; line-height: 1.6; }
-        
-        .v-wrap { 
-            border-radius: 20px; overflow: hidden; background: #000; 
-            border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 30px 60px rgba(0,0,0,0.8);
-            position: relative; width: 100%;
-        }
-        .size-9-16 { max-width: 320px; aspect-ratio: 9/16; }
-        .size-16-9 { max-width: 850px; aspect-ratio: 16/9; }
+        .project-info h2 { font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: 10px; text-transform: uppercase; }
+        .project-info p { opacity: 0.5; font-size: 1rem; margin-bottom: 25px; line-height: 1.6; font-family: 'Inter'; }
+
+        .v-wrap { border-radius: 20px; overflow: hidden; background: #000; border: 1px solid rgba(255,255,255,0.1); position: relative; width: 100%; }
+        .size-9-16 { width: 85%; max-width: 300px; aspect-ratio: 9/16; margin: 0 auto; }
+        .size-16-9 { width: 100%; max-width: 850px; aspect-ratio: 16/9; margin: 0 auto; }
         video { width: 100%; height: 100%; object-fit: cover; }
 
-        .view-btn { 
-            padding: 15px 40px; background: transparent; border: 1px solid white; 
-            color: white; font-weight: 600; cursor: pointer; transition: 0.3s;
-            text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem;
-        }
-        .view-btn:hover { background: white; color: black; }
+        .btn-play { padding: 12px 35px; background: transparent; border: 1px solid white; color: white; cursor: pointer; transition: 0.3s; font-weight: 600; letter-spacing: 1px; font-size: 0.8rem; }
+        .btn-play:hover { background: white; color: black; }
 
-        /* Fixed Video Modal */
-        #video-modal { 
-            position: fixed; inset: 0; background: #000; z-index: 60000; 
-            display: none; align-items: center; justify-content: center;
-        }
+        /* Modal Player */
+        #video-modal { position: fixed; inset: 0; background: #000; z-index: 60000; display: none; align-items: center; justify-content: center; }
         .modal-content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
         #full-player { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .close-vid { 
-            position: absolute; top: 30px; right: 40px; font-size: 3.5rem; 
-            color: white; cursor: pointer; z-index: 60001; line-height: 1;
-            transition: 0.3s;
-        }
+        .close-vid { position: absolute; top: 20px; right: 25px; font-size: 3rem; color: white; cursor: pointer; z-index: 60001; }
 
-        /* Forms (Admin/Contact) */
-        .studio-card, .contact-box { background: var(--glass); border-radius: 25px; padding: 40px; border: 1px solid rgba(255,255,255,0.1); }
-        input, textarea, select { width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 10px; outline: none; }
-        .whatsapp-btn { width: 100%; padding: 18px; background: #25d366; color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        /* Forms */
+        .contact-box, .studio-card { width: 90% !important; max-width: 450px; background: var(--glass); border-radius: 25px; padding: 30px; border: 1px solid rgba(255,255,255,0.1); }
+        input, textarea, select { width: 100%; padding: 12px; margin-bottom: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; outline: none; font-size: 16px; }
+        .whatsapp-btn { width: 100%; padding: 15px; background: #25d366; color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
 
     </style>
 </head>
 <body id="body">
 
-    <div class="bg-glow"></div>
+    <div class="bg-layer"></div>
     <div class="cursor"></div><div class="cursor-f"></div>
     
     <nav><div class="logo">GLYDRA</div></nav>
 
     <main>
-        <section class="hero"><h1>GLYDRA STUDIO</h1><p>VISUAL NARRATIVES</p></section>
+        <section class="hero">
+            <h1>GLYDRA STUDIO</h1>
+            <p>VISUAL ARCHITECTS</p>
+        </section>
+
+        <section class="philosophy">
+            <div class="phi-card">
+                <h2>01. 3D RENDERING</h2>
+                <p>We create digital realities where every pixel tells a story of light and texture.</p>
+            </div>
+            <div class="phi-card">
+                <h2>02. MOTION DESIGN</h2>
+                <p>Bringing concepts to life through cinematic movement and fluid transitions.</p>
+            </div>
+        </section>
         
         <div id="main-gallery" class="gallery"></div>
 
-        <section style="display:flex; justify-content:center; padding-bottom:100px;">
-            <div class="contact-box" style="width:90%; max-width:450px;">
-                <h3 style="text-align:center; margin-bottom:20px;">START A PROJECT</h3>
-                <input type="text" id="c-name" placeholder="Your Name">
-                <textarea id="c-task" placeholder="Details..." rows="3"></textarea>
-                <button class="whatsapp-btn" onclick="sendWhatsApp()">WHATSAPP BOOKING</button>
+        <section style="display:flex; justify-content:center; padding-bottom:80px;">
+            <div class="contact-box">
+                <h3 style="text-align:center; margin-bottom:20px;">BOOK A PROJECT</h3>
+                <input type="text" id="c-name" placeholder="Name">
+                <textarea id="c-task" placeholder="Your Vision..." rows="3"></textarea>
+                <button class="whatsapp-btn" onclick="sendWhatsApp()">CONNECT VIA WHATSAPP</button>
             </div>
         </section>
     </main>
@@ -117,25 +122,25 @@
     </div>
 
     <div id="admin-panel" style="position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 50000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px);">
-        <div class="studio-card" style="width: 90%; max-width: 500px; overflow-y:auto; max-height:90vh;">
-            <h3 style="text-align:center; color:var(--accent); margin-bottom:20px;">ENGINE CONTROL</h3>
+        <div class="studio-card">
+            <h3 style="text-align:center; color:var(--accent); margin-bottom:20px;">ENGINE PANEL</h3>
             <div id="admin-auth">
-                <input type="password" id="admin-pass-input" placeholder="Password">
+                <input type="password" id="admin-pass-input" placeholder="Secret Key">
                 <button onclick="checkPass()" style="width:100%; padding:15px; background:white; color:black; font-weight:700; border-radius:10px;">UNLOCK</button>
             </div>
             <div id="admin-main" style="display:none;">
                 <input type="text" id="v-name" placeholder="Project Name">
-                <textarea id="v-desc" placeholder="Description"></textarea>
-                <input type="text" id="v-short-url" placeholder="Preview URL">
-                <input type="text" id="v-full-url" placeholder="Full Movie URL">
+                <textarea id="v-desc" placeholder="Project Description"></textarea>
+                <input type="text" id="v-short-url" placeholder="Preview URL (RAW)">
+                <input type="text" id="v-full-url" placeholder="Full Movie URL (RAW)">
                 <select id="v-size"><option value="size-9-16">VERTICAL</option><option value="size-16-9">WIDE</option></select>
-                <button id="save-btn" onclick="saveToFirebase()" style="width:100%; padding:15px; background:var(--accent); color:white; border:none; border-radius:10px;">DEPLOY LIVE</button>
-                <div id="manage-list" style="margin-top:20px;"></div>
+                <button id="save-btn" onclick="saveToFirebase()" style="width:100%; padding:15px; background:var(--accent); color:white; border-radius:10px;">DEPLOY LIVE</button>
+                <div id="manage-list" style="margin-top:20px; max-height: 200px; overflow-y: auto;"></div>
                 <hr style="margin:20px 0; opacity:0.1;">
-                <input type="text" id="new-pass-val" placeholder="New Password">
-                <button onclick="updatePassword()" style="width:100%; padding:10px; background:rgba(255,255,255,0.1); color:white; border:none;">CHANGE PASS</button>
+                <input type="text" id="new-pass-val" placeholder="Change Password">
+                <button onclick="updatePassword()" style="width:100%; padding:10px; background:rgba(255,255,255,0.1); color:white; border:none;">UPDATE KEY</button>
             </div>
-            <p onclick="location.reload()" style="text-align:center; margin-top:20px; font-size:10px; opacity:0.3; cursor:pointer;">EXIT</p>
+            <p onclick="location.reload()" style="text-align:center; margin-top:20px; font-size:10px; opacity:0.3; cursor:pointer;">DISCONNECT</p>
         </div>
     </div>
 
@@ -154,16 +159,15 @@
         const passRef = firebase.database().ref('adminConfig/password');
         let editingId = null;
 
-        // Mouse Controller
-        const cur = document.querySelector('.cursor'), fol = document.querySelector('.cursor-f');
-        window.addEventListener('mousemove', e => {
-            if (window.innerWidth > 1024) {
+        // Smart Cursor (Hidden on Mobile)
+        if (window.innerWidth > 1024) {
+            const cur = document.querySelector('.cursor'), fol = document.querySelector('.cursor-f');
+            window.addEventListener('mousemove', e => {
                 gsap.to(cur, { x: e.clientX, y: e.clientY, duration: 0.1 });
-                gsap.to(fol, { x: e.clientX - 14, y: e.clientY - 14, duration: 0.3 });
-            }
-        });
+                gsap.to(fol, { x: e.clientX - 12, y: e.clientY - 12, duration: 0.3 });
+            });
+        }
 
-        // Toggle Admin
         window.addEventListener('keydown', (e) => { if (e.key === '=') document.getElementById('admin-panel').style.display = 'flex'; });
 
         async function checkPass() {
@@ -204,13 +208,15 @@
                     <div class="project-card">
                         <div class="project-info">
                             <h2>${p.name}</h2>
-                            <p>${p.desc || ""}</p>
-                            <button class="view-btn" onclick="openVideo('${p.fullUrl}')">View Film</button>
+                            <p>${p.desc || "Visual experience by Glydra Studio."}</p>
+                            <button class="btn-play" onclick="openVideo('${p.fullUrl}')">WATCH FILM</button>
                         </div>
-                        <div class="v-wrap ${p.size}"><video autoplay muted loop playsinline><source src="${p.shortUrl}"></video></div>
+                        <div class="v-wrap-container">
+                            <div class="v-wrap ${p.size}"><video autoplay muted loop playsinline><source src="${p.shortUrl}"></video></div>
+                        </div>
                     </div>`);
             });
-            gsap.to(".project-card", { opacity: 1, y: 0, stagger: 0.3, duration: 1.5, ease: "power4.out" });
+            gsap.from(".project-card", { opacity: 0, y: 30, duration: 1, stagger: 0.3 });
         });
 
         function renderList() {
@@ -220,9 +226,9 @@
                 list.innerHTML = "";
                 if(data) Object.keys(data).forEach(k => {
                     list.insertAdjacentHTML('beforeend', `
-                        <div style="display:flex; justify-content:space-between; padding:12px; background:rgba(255,255,255,0.05); margin-bottom:5px; border-radius:8px; font-size:12px;">
+                        <div style="display:flex; justify-content:space-between; padding:10px; background:rgba(255,255,255,0.05); margin-bottom:5px; border-radius:8px; font-size:12px;">
                             <span>${data[k].name}</span>
-                            <div><button onclick="editP('${k}')">Edit</button> <button onclick="deleteP('${k}')">Del</button></div>
+                            <div><button onclick="editP('${k}')">EDIT</button> <button onclick="deleteP('${k}')">DEL</button></div>
                         </div>`);
                 });
             });
@@ -246,14 +252,14 @@
         function openVideo(url) { 
             document.getElementById('full-player').src = url; 
             document.getElementById('video-modal').style.display = 'flex'; 
-            document.getElementById('body').classList.add('modal-open'); // Returns cursor to normal
+            document.getElementById('body').classList.add('modal-open'); 
         }
 
         function closeVideo() { 
             const p = document.getElementById('full-player');
             p.pause(); p.src = "";
             document.getElementById('video-modal').style.display = 'none'; 
-            document.getElementById('body').classList.remove('modal-open'); // Re-hides cursor
+            document.getElementById('body').classList.remove('modal-open'); 
         }
 
         function sendWhatsApp() {
