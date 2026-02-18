@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLYDRA | THE COMPLETE STUDIO</title>
+    <title>GLYDRA | STUDIO</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Inter:wght@300;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -13,7 +13,7 @@
 
     <style>
         :root { 
-            --burgundy: #4a010d; --accent: #ff003c; --black: #050505; --glass: rgba(15, 15, 15, 0.9);
+            --burgundy: #4a010d; --accent: #ff003c; --black: #050505; --glass: rgba(15, 15, 15, 0.95);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -22,94 +22,92 @@
             background-attachment: fixed; color: white; font-family: 'Outfit', sans-serif; overflow-x: hidden; cursor: none;
         }
 
-        /* Cursor */
+        /* Cursor Customization */
         .cursor { width: 6px; height: 6px; background: #fff; border-radius: 50%; position: fixed; z-index: 10000; pointer-events: none; }
         .cursor-f { width: 25px; height: 25px; border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; position: fixed; z-index: 9999; pointer-events: none; }
 
-        /* Navbar */
+        /* Navigation */
         nav { 
             position: fixed; top: 0; width: 100%; padding: 25px 50px; display: flex; justify-content: space-between; align-items: center; z-index: 1000;
             background: rgba(0,0,0,0.3); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .nav-links { display: flex; gap: 30px; position: absolute; left: 50%; transform: translateX(-50%); }
-        .nav-links a { color: white; text-decoration: none; font-size: 0.8rem; letter-spacing: 2px; opacity: 0.6; transition: 0.3s; }
-        .nav-links a:hover { opacity: 1; color: var(--accent); }
         .logo { font-size: 1.2rem; font-weight: 600; letter-spacing: 5px; }
 
-        /* Hero */
+        /* Hero Section */
         .hero { height: 85vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .hero h1 { font-size: 5.5rem; letter-spacing: -2px; margin-bottom: 10px; }
-        .hero p { opacity: 0.5; font-size: 1.1rem; font-family: 'Inter'; }
+        .hero h1 { font-size: clamp(3rem, 10vw, 5.5rem); letter-spacing: -2px; }
+        .hero p { opacity: 0.5; font-size: 1.1rem; margin-top: 10px; }
 
         /* Philosophy */
-        .philosophy { padding: 120px 15%; text-align: center; background: rgba(0,0,0,0.2); }
-        .philosophy h2 { font-size: 0.8rem; letter-spacing: 5px; color: var(--accent); margin-bottom: 20px; }
-        .philosophy p { font-size: 1.8rem; line-height: 1.4; font-weight: 300; opacity: 0.9; }
+        .philosophy { padding: 120px 15%; text-align: center; }
+        .philosophy p { font-size: 1.8rem; line-height: 1.5; font-weight: 300; opacity: 0.8; }
 
-        /* Gallery */
-        .gallery-label { text-align: center; padding-top: 100px; font-size: 0.7rem; letter-spacing: 10px; opacity: 0.3; }
+        /* Gallery System */
         .gallery { padding: 50px 10% 150px; display: flex; flex-direction: column; align-items: center; }
         .project-card { margin-bottom: 120px; text-align: center; width: 100%; }
-        .v-wrap { border-radius: 20px; overflow: hidden; background: #000; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 40px 80px rgba(0,0,0,0.6); transition: 0.5s ease; }
-        .v-wrap:hover { border-color: var(--accent); transform: scale(1.01); }
+        
+        /* Fixed Ratios for Preview */
+        .v-wrap { border-radius: 20px; overflow: hidden; background: #000; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 40px 80px rgba(0,0,0,0.5); }
         .size-9-16 { width: 320px; aspect-ratio: 9/16; margin: 0 auto; }
         .size-16-9 { width: 100%; max-width: 850px; aspect-ratio: 16/9; margin: 0 auto; }
         video { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Contact */
-        #contact-section { padding: 150px 0; display: flex; flex-direction: column; align-items: center; background: rgba(0,0,0,0.3); }
-        .contact-box { width: 450px; padding: 45px; background: var(--glass); border-radius: 30px; border: 1px solid rgba(255,255,255,0.05); }
-        .contact-box input, .contact-box textarea { width: 100%; padding: 15px; margin: 10px 0; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 12px; outline: none; }
-        .whatsapp-btn { width: 100%; padding: 18px; background: #25d366; color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 15px; transition: 0.3s; }
-        .whatsapp-btn:hover { background: #1da851; transform: translateY(-3px); }
+        /* Full Screen Video Modal - The Fix is Here */
+        #video-modal { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.98); 
+            z-index: 60000; display: none; align-items: center; justify-content: center; cursor: auto; 
+        }
+        .modal-content { position: relative; width: 90%; height: 90%; display: flex; align-items: center; justify-content: center; }
+        
+        /* This ensures the video keeps its original proportions */
+        #full-player { 
+            max-width: 100%; 
+            max-height: 100%; 
+            object-fit: contain; /* This prevents stretching */
+            box-shadow: 0 0 50px rgba(0,0,0,1);
+        }
+
+        .close-vid { position: fixed; top: 30px; right: 40px; font-size: 3rem; color: white; cursor: pointer; z-index: 60001; opacity: 0.6; }
 
         /* Admin Engine */
-        #admin-panel { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 50000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(25px); cursor: auto; }
-        .studio-card { background: var(--glass); width: 480px; border-radius: 30px; padding: 40px; border: 1px solid var(--burgundy); max-height: 90vh; overflow-y: auto; }
-        .input-wrapper { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 12px 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
-        .input-wrapper label { display: block; font-size: 10px; color: var(--accent); letter-spacing: 1px; margin-bottom: 5px; font-weight: 700; }
-        .input-wrapper input, .input-wrapper select { width: 100%; background: transparent; border: none; color: white; outline: none; }
+        #admin-panel { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 50000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); cursor: auto; }
+        .studio-card { background: var(--glass); width: 450px; border-radius: 30px; padding: 40px; border: 1px solid var(--burgundy); max-height: 90vh; overflow-y: auto; }
+        .input-box { margin-bottom: 15px; }
+        .input-box label { display: block; font-size: 10px; color: var(--accent); margin-bottom: 5px; font-weight: 700; }
+        .input-box input, .input-box select { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 10px; outline: none; }
 
-        /* Video Player */
-        #video-modal { position: fixed; inset: 0; background: #000; z-index: 60000; display: none; align-items: center; justify-content: center; cursor: auto; }
-        .close-vid { position: fixed; top: 30px; right: 40px; font-size: 3rem; color: white; cursor: pointer; z-index: 60001; opacity: 0.5; transition: 0.3s; }
-        .close-vid:hover { opacity: 1; color: var(--accent); }
-        
-        .manage-item { display: flex; justify-content: space-between; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-top: 10px; font-size: 11px; }
+        /* Contact Section */
+        #contact-section { padding: 100px 0; display: flex; flex-direction: column; align-items: center; }
+        .contact-box { width: 400px; padding: 40px; background: rgba(255,255,255,0.02); border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); }
+        .contact-box input, .contact-box textarea { width: 100%; padding: 15px; margin: 10px 0; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 10px; outline: none; }
+        .whatsapp-btn { width: 100%; padding: 15px; background: #25d366; color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+
+        .manage-item { display: flex; justify-content: space-between; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; margin-top: 8px; font-size: 11px; }
     </style>
 </head>
 <body>
 
     <div class="cursor"></div><div class="cursor-f"></div>
 
-    <nav>
-        <div class="logo">GLYDRA</div>
-        <div class="nav-links">
-            <a href="#">HOME</a>
-            <a href="#main-gallery">PROJECTS</a>
-            <a href="#contact-section">CONTACT</a>
-        </div>
-    </nav>
+    <nav><div class="logo">GLYDRA</div></nav>
 
     <main>
         <section class="hero">
             <h1>GLYDRA STUDIO</h1>
-            <p>Next-Gen 3D Rendering & Motion Design</p>
+            <p>Beyond Dimensions</p>
         </section>
 
         <section class="philosophy">
-            <h2>3D VISION</h2>
-            <p>Beyond the screen, we build dimensions. Every render is a symphony of light, shadow, and geometry designed to tell stories that pixels alone cannot express.</p>
+            <p>We transform concepts into visual reality through high-end 3D rendering and cinematic motion design.</p>
         </section>
 
-        <div class="gallery-label">LATEST WORKS</div>
         <section class="gallery" id="main-gallery"></section>
 
         <section id="contact-section">
             <div class="contact-box">
-                <h2 style="text-align: center; margin-bottom: 30px; letter-spacing: 2px;">START YOUR RENDER</h2>
-                <input type="text" id="c-name" placeholder="Full Name">
-                <textarea id="c-task" placeholder="Project details..." rows="4"></textarea>
+                <h3 style="text-align:center; margin-bottom:20px;">CONTACT US</h3>
+                <input type="text" id="c-name" placeholder="Your Name">
+                <textarea id="c-task" placeholder="Project details..." rows="3"></textarea>
                 <button class="whatsapp-btn" onclick="sendWhatsApp()">SEND TO WHATSAPP</button>
             </div>
         </section>
@@ -117,30 +115,32 @@
 
     <div id="admin-panel">
         <div class="studio-card">
-            <h3 style="text-align:center; color:var(--accent); margin-bottom:25px; letter-spacing:4px;">ENGINE CONTROL</h3>
-            <div class="input-wrapper"><label>PROJECT NAME</label><input type="text" id="v-name"></div>
-            <div class="input-wrapper"><label>PREVIEW MP4 URL</label><input type="text" id="v-short-url"></div>
-            <div class="input-wrapper"><label>FULL FILM MP4 URL</label><input type="text" id="v-full-url"></div>
-            <div class="input-wrapper">
-                <label>SIZE</label>
+            <h3 style="text-align:center; color:var(--accent); margin-bottom:20px; letter-spacing:3px;">ENGINE</h3>
+            <div class="input-box"><label>PROJECT NAME</label><input type="text" id="v-name"></div>
+            <div class="input-box"><label>PREVIEW URL (RAW LINK)</label><input type="text" id="v-short-url"></div>
+            <div class="input-box"><label>FULL FILM URL (RAW LINK)</label><input type="text" id="v-full-url"></div>
+            <div class="input-box">
+                <label>LAYOUT</label>
                 <select id="v-size">
                     <option value="size-9-16">VERTICAL (9:16)</option>
                     <option value="size-16-9">WIDE (16:9)</option>
                 </select>
             </div>
-            <button onclick="saveToFirebase()" style="width:100%; padding:18px; background:white; color:black; font-weight:700; border-radius:15px; cursor:pointer; border:none;">DEPLOY LIVE</button>
+            <button onclick="saveToFirebase()" style="width:100%; padding:15px; background:white; color:black; font-weight:700; border-radius:10px; cursor:pointer; border:none;">PUSH LIVE</button>
             <div id="manage-list"></div>
-            <p onclick="document.getElementById('admin-panel').style.display='none'" style="text-align:center; margin-top:20px; font-size:10px; opacity:0.3; cursor:pointer;">DISMISS</p>
+            <p onclick="document.getElementById('admin-panel').style.display='none'" style="text-align:center; margin-top:20px; font-size:10px; opacity:0.3; cursor:pointer;">CLOSE ENGINE</p>
         </div>
     </div>
 
     <div id="video-modal">
         <div class="close-vid" onclick="closeVideo()">×</div>
-        <video id="full-player" controls autoplay style="max-width:95%; max-height:90%;"></video>
+        <div class="modal-content">
+            <video id="full-player" controls autoplay playsinline></video>
+        </div>
     </div>
 
     <script>
-        // بيانات Firebase الحقيقية الخاصة بك من الصورة
+        // Firebase Configuration (Same as your image)
         const firebaseConfig = {
             apiKey: "AIzaSyDTVlcGCfeDZD xLjx-j5pPutvm9tpg2wCk",
             authDomain: "glydra-f8004.firebaseapp.com",
@@ -154,7 +154,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database().ref('projects');
 
-        // Mouse
+        // Mouse Smooth Follow
         const cur = document.querySelector('.cursor'), fol = document.querySelector('.cursor-f');
         window.addEventListener('mousemove', e => {
             gsap.to(cur, { x: e.clientX, y: e.clientY, duration: 0.1 });
@@ -164,9 +164,9 @@
             cur.style.display = fol.style.display = isSpecial ? 'none' : 'block';
         });
 
-        // Open Admin (=)
+        // Secret Admin Access (=)
         window.addEventListener('keydown', (e) => {
-            if (e.key === '=') { if (prompt("KEY:") === "000") { document.getElementById('admin-panel').style.display = 'flex'; renderList(); } }
+            if (e.key === '=') { if (prompt("ACCESS KEY:") === "000") { document.getElementById('admin-panel').style.display = 'flex'; renderList(); } }
         });
 
         function saveToFirebase() {
@@ -178,7 +178,7 @@
             document.getElementById('admin-panel').style.display = 'none';
         }
 
-        // تحديث المعرض لحظياً
+        // Live Real-time Sync
         db.on('value', (snap) => {
             const data = snap.val();
             const container = document.getElementById('main-gallery');
@@ -188,8 +188,8 @@
                 container.insertAdjacentHTML('beforeend', `
                     <div class="project-card">
                         <div class="v-wrap ${p.size}"><video autoplay muted loop playsinline><source src="${p.shortUrl}"></video></div>
-                        <h2 style="font-size:2rem; margin-bottom:10px;">${p.name}</h2>
-                        <button onclick="openVideo('${p.fullUrl}')" style="padding:10px 40px; border:1px solid white; background:transparent; color:white; cursor:pointer;">WATCH FULL FILM</button>
+                        <h2 style="font-size:1.8rem; letter-spacing:1px;">${p.name}</h2>
+                        <button onclick="openVideo('${p.fullUrl}')" style="margin-top:15px; padding:10px 30px; border:1px solid white; background:transparent; color:white; cursor:pointer; font-size:0.8rem;">VIEW CINEMATIC</button>
                     </div>`);
             });
         });
@@ -200,18 +200,30 @@
                 const list = document.getElementById('manage-list');
                 list.innerHTML = "";
                 if(data) Object.keys(data).forEach(k => {
-                    list.insertAdjacentHTML('beforeend', `<div class="manage-item"><span>${data[k].name}</span><span onclick="deleteP('${k}')" style="color:red; cursor:pointer;">DEL</span></div>`);
+                    list.insertAdjacentHTML('beforeend', `<div class="manage-item"><span>${data[k].name}</span><span onclick="deleteP('${k}')" style="color:red; cursor:pointer;">REMOVE</span></div>`);
                 });
             });
         }
 
-        function deleteP(k) { if(confirm("Delete?")) firebase.database().ref('projects/'+k).remove(); renderList(); }
-        function openVideo(url) { document.getElementById('full-player').src = url; document.getElementById('video-modal').style.display = 'flex'; }
-        function closeVideo() { document.getElementById('full-player').pause(); document.getElementById('video-modal').style.display = 'none'; }
+        function deleteP(k) { if(confirm("Confirm Delete?")) firebase.database().ref('projects/'+k).remove(); renderList(); }
+        
+        function openVideo(url) { 
+            const player = document.getElementById('full-player');
+            player.src = url; 
+            document.getElementById('video-modal').style.display = 'flex'; 
+        }
+
+        function closeVideo() { 
+            const player = document.getElementById('full-player');
+            player.pause(); 
+            player.src = ""; // Clears the source to stop loading
+            document.getElementById('video-modal').style.display = 'none'; 
+        }
+
         function sendWhatsApp() {
             const name = document.getElementById('c-name').value;
             const task = document.getElementById('c-task').value;
-            window.open(`https://wa.me/201280022629?text=Hello, I am ${name}. Project: ${task}`, '_blank');
+            window.open(`https://wa.me/201280022629?text=Hi Glydra, I am ${name}. Project: ${task}`, '_blank');
         }
     </script>
 </body>
