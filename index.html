@@ -25,8 +25,6 @@
             body { cursor: none; }
             .cursor { width: 8px; height: 8px; background: #fff; border-radius: 50%; position: fixed; z-index: 10000; pointer-events: none; mix-blend-mode: difference; }
             .cursor-f { width: 30px; height: 30px; border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; position: fixed; z-index: 9999; pointer-events: none; transition: transform 0.1s ease; }
-            
-            /* Class to restore mouse when needed */
             body.free-mouse { cursor: auto !important; }
             body.free-mouse .cursor, body.free-mouse .cursor-f { display: none; }
         }
@@ -34,10 +32,44 @@
         nav { position: fixed; top: 0; width: 100%; padding: 25px 40px; z-index: 1000; background: rgba(0,0,0,0.2); backdrop-filter: blur(15px); display: flex; justify-content: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .logo { font-size: 1.2rem; font-weight: 600; letter-spacing: 8px; color: #fff; }
 
-        /* Sections */
-        .hero { height: 70vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .hero h1 { font-size: clamp(3rem, 12vw, 7rem); letter-spacing: -3px; font-weight: 600; }
-        .hero p { opacity: 0.4; font-size: 0.8rem; letter-spacing: 5px; margin-top: 10px; }
+        /* Hero with Background Video */
+        .hero { 
+            position: relative; 
+            height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            overflow: hidden; 
+            text-align: center; 
+        }
+        
+        .hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: 1;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+        }
+
+        .video-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5); /* تعتيم الفيديو عشان الكلام يظهر */
+            z-index: 2;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+        }
+
+        .hero h1 { font-size: clamp(3rem, 12vw, 7rem); letter-spacing: -3px; font-weight: 600; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .hero p { opacity: 0.6; font-size: 0.8rem; letter-spacing: 5px; margin-top: 10px; }
 
         .philosophy { padding: 80px 10%; display: grid; grid-template-columns: 1fr; gap: 30px; }
         @media (min-width: 768px) { .philosophy { grid-template-columns: 1fr 1fr; } }
@@ -95,8 +127,15 @@
 
     <main>
         <section class="hero">
-            <h1>GLYDRA STUDIO</h1>
-            <p>PREMIER VISUAL PRODUCTION</p>
+            <video autoplay muted loop playsinline class="hero-video">
+                <source src="FINAL BIG GLYDRA0001-0310.mp4" type="video/mp4">
+            </video>
+            <div class="video-overlay"></div>
+            
+            <div class="hero-content">
+                <h1>GLYDRA STUDIO</h1>
+                <p>PREMIER VISUAL PRODUCTION</p>
+            </div>
         </section>
 
         <section class="philosophy">
@@ -165,7 +204,6 @@
         const passRef = firebase.database().ref('adminConfig/password');
         let editingId = null;
 
-        // Smart Mouse Control
         function forceFreeMouse(isFree) {
             if (isFree) document.getElementById('body').classList.add('free-mouse');
             else if (!document.getElementById('body').classList.contains('modal-open') && 
@@ -182,7 +220,6 @@
             });
         }
 
-        // Open Admin (Key: = or click ENG_CONTROL)
         window.addEventListener('keydown', (e) => { if (e.key === '=') openAdmin(); });
         function openAdmin() {
             document.getElementById('admin-panel').style.display = 'flex';
