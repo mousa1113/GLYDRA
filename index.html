@@ -2,254 +2,209 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLYDRA | Cinematic Visual Production</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GLYDRA | PREMIER VISUAL STUDIO</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;400;900&family=Inter:wght@200;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Inter:wght@300;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        :root {
-            --burgundy: #2e0108;
-            --accent: #ff003c;
-            --black: #050505;
-            --white: #ffffff;
-            --glass: rgba(255, 255, 255, 0.02);
-            --border: rgba(255, 255, 255, 0.1);
+        :root { 
+            --burgundy: #4a010d; 
+            --accent: #ff003c; 
+            --black: #050505; 
+            --dark-grey: #121212;
+            --glass: rgba(15, 15, 15, 0.85); 
         }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--black); color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; line-height: 1.6; }
+        h1, h2, h3, .logo { font-family: 'Outfit', sans-serif; text-transform: uppercase; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        body { 
-            background: var(--black); 
-            color: var(--white); 
-            font-family: 'Inter', sans-serif; 
-            overflow-x: hidden;
-        }
+        /* Custom Cursor */
+        .cursor { width: 10px; height: 10px; background: white; border-radius: 50%; position: fixed; z-index: 10000; pointer-events: none; mix-blend-mode: difference; }
+        .cursor-f { width: 35px; height: 35px; border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; position: fixed; z-index: 9999; pointer-events: none; transition: transform 0.15s ease; }
 
-        /* Luxury Background Glow */
-        body::before {
-            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, var(--burgundy) 0%, var(--black) 100%);
-            z-index: -1; opacity: 0.5;
-        }
+        /* Navigation (Sketch 1) */
+        nav { position: fixed; top: 0; width: 100%; padding: 20px 50px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); backdrop-filter: blur(10px); }
+        .nav-links { display: flex; gap: 30px; font-size: 0.8rem; letter-spacing: 2px; }
+        .nav-links a { color: white; text-decoration: none; opacity: 0.7; transition: 0.3s; }
+        .nav-links a:hover { opacity: 1; color: var(--accent); }
+        .logo { font-size: 1.5rem; font-weight: 600; letter-spacing: 10px; text-align: center; flex-grow: 1; margin-left: -50px; }
+        .cta-nav { padding: 10px 20px; border: 1px solid white; border-radius: 50px; font-size: 0.7rem; cursor: pointer; transition: 0.3s; }
+        .cta-nav:hover { background: white; color: black; }
 
-        h1, h2, h3, .logo { font-family: 'Outfit', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
-
-        /* Floating Nav (Sketch 1) */
-        nav {
-            position: fixed; top: 0; width: 100%; padding: 40px 60px;
-            display: flex; justify-content: space-between; align-items: center;
-            z-index: 1000; mix-blend-mode: difference;
-        }
-        .nav-links { display: flex; gap: 40px; font-size: 10px; font-weight: 700; opacity: 0.6; }
-        .nav-links a { color: white; text-decoration: none; transition: 0.4s; }
-        .nav-links a:hover { color: var(--accent); letter-spacing: 4px; opacity: 1; }
-
-        /* Hero (Sketch 1) */
-        .hero { 
-            height: 100vh; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; position: relative; 
-            overflow: hidden;
-        }
-        #hero-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.4; filter: brightness(0.7) saturate(1.2); }
-        .hero-title { font-size: clamp(4rem, 18vw, 15rem); font-weight: 900; line-height: 0.8; z-index: 10; text-align: center; }
-        .hero-tag { font-size: 10px; letter-spacing: 15px; opacity: 0.5; margin-top: 20px; z-index: 10; }
+        /* Hero Section (Sketch 1) */
+        .hero { position: relative; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; filter: brightness(0.4); }
+        .hero-content { position: relative; z-index: 2; text-align: center; }
+        .hero h1 { font-size: clamp(4rem, 15vw, 10rem); line-height: 0.9; margin-bottom: 20px; }
+        .hero p { letter-spacing: 8px; font-size: 0.9rem; opacity: 0.6; }
 
         /* Bento Gallery (Sketch 5) */
-        .gallery-container { padding: 100px 5%; }
-        .bento-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 300px; gap: 20px;
-        }
-        .bento-item {
-            position: relative; border-radius: 35px; overflow: hidden; background: #0a0a0a;
-            border: 1px solid var(--border); transition: 0.6s cubic-bezier(0.2, 1, 0.3, 1);
-            cursor: pointer;
-        }
-        .bento-item:hover { border-color: var(--accent); transform: scale(0.98); }
-        .bento-item video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: 0.6s; }
-        .bento-item:hover video { opacity: 1; transform: scale(1.05); }
-        
-        .bento-item.wide { grid-column: span 2; }
-        .bento-item.tall { grid-row: span 2; }
-        
-        .overlay {
-            position: absolute; bottom: 0; left: 0; width: 100%; padding: 40px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
-            pointer-events: none; opacity: 0; transition: 0.4s;
-        }
-        .bento-item:hover .overlay { opacity: 1; }
+        .gallery-section { padding: 100px 5%; }
+        .section-title { font-size: 3rem; margin-bottom: 50px; border-left: 5px solid var(--accent); padding-left: 20px; }
+        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); grid-auto-rows: 300px; gap: 20px; }
+        .project-card { position: relative; border-radius: 20px; overflow: hidden; background: var(--dark-grey); cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.5s cubic-bezier(0.2, 1, 0.3, 1); }
+        .project-card:hover { transform: scale(0.98); border-color: var(--accent); }
+        .project-card.wide { grid-column: span 2; }
+        .project-card.tall { grid-row: span 2; }
+        .project-card video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: 0.5s; }
+        .project-card:hover video { opacity: 1; transform: scale(1.05); }
+        .card-info { position: absolute; bottom: 30px; left: 30px; z-index: 3; pointer-events: none; }
+        .card-info h3 { font-size: 1.5rem; margin-bottom: 5px; }
+        .card-info p { font-size: 0.8rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 2px; }
 
         /* Pricing (Sketch 2) */
-        .pricing-section { padding: 120px 5%; display: grid; grid-template-columns: 1fr 350px; gap: 40px; }
-        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .price-card {
-            background: var(--glass); border: 1px solid var(--border);
-            padding: 60px 40px; border-radius: 45px; backdrop-filter: blur(20px);
-            transition: 0.5s; position: relative; overflow: hidden;
-        }
-        .price-card:hover { border-color: var(--accent); background: rgba(46, 1, 8, 0.2); transform: translateY(-10px); }
-        .price-card h3 { color: var(--accent); font-size: 30px; margin-bottom: 25px; }
-        .price-card ul { list-style: none; opacity: 0.6; font-size: 14px; line-height: 2.2; }
-        
-        .addons-box {
-            background: linear-gradient(135deg, var(--burgundy), #1a0104);
-            border-radius: 45px; padding: 50px 40px; border: 1px solid var(--border);
-        }
-        .addons-box h4 { font-size: 12px; opacity: 0.5; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        .addon { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 700; font-size: 13px; }
+        .pricing-section { padding: 100px 10%; display: grid; grid-template-columns: 2fr 1fr; gap: 40px; background: rgba(255,255,255,0.01); }
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .price-card { background: var(--dark-grey); padding: 40px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
+        .price-card h4 { color: var(--accent); margin-bottom: 20px; }
+        .price-card .amount { font-size: 2.5rem; font-weight: 600; margin-bottom: 20px; display: block; }
+        .price-card ul { list-style: none; margin-bottom: 30px; text-align: left; font-size: 0.9rem; opacity: 0.8; }
+        .price-card ul li { margin-bottom: 10px; }
+        .addons-sidebar { background: var(--burgundy); padding: 40px; border-radius: 25px; display: flex; flex-direction: column; gap: 20px; }
 
-        /* Contact (Sketch 3 & 4) */
-        .contact-section { padding: 150px 5%; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 80px; }
-        .contact-typo h2 { font-size: clamp(3rem, 9vw, 10rem); line-height: 0.8; font-weight: 900; color: var(--accent); }
-        .contact-info { margin-top: 60px; font-size: 24px; font-weight: 200; }
-        .contact-info a { color: white; text-decoration: none; opacity: 0.5; transition: 0.3s; }
-        .contact-info a:hover { opacity: 1; color: var(--accent); }
+        /* Contact (Sketch 3/4) */
+        .contact-container { padding: 100px 10%; display: flex; flex-direction: column; align-items: center; }
+        .contact-big-text { font-size: clamp(2rem, 8vw, 5rem); font-weight: 600; text-align: center; line-height: 1.1; margin-bottom: 80px; }
+        .contact-methods { display: flex; gap: 100px; margin-bottom: 100px; }
+        .method h4 { opacity: 0.4; margin-bottom: 15px; }
+        .method p { font-size: 1.5rem; font-weight: 500; }
 
-        .form-container { background: var(--glass); padding: 60px; border-radius: 50px; border: 1px solid var(--border); }
-        .form-group { margin-bottom: 30px; position: relative; }
-        input, textarea {
-            width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border);
-            padding: 20px 0; color: white; font-family: inherit; font-size: 16px; outline: none; transition: 0.4s;
-        }
+        .form-box { width: 100%; max-width: 800px; background: var(--dark-grey); padding: 60px; border-radius: 40px; }
+        input, textarea { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 20px 0; color: white; font-size: 1.1rem; margin-bottom: 30px; outline: none; }
         input:focus, textarea:focus { border-color: var(--accent); }
-        .send-btn {
-            width: 100%; padding: 25px; border-radius: 20px; border: none; 
-            background: var(--white); color: var(--black); font-weight: 900; 
-            text-transform: uppercase; cursor: pointer; transition: 0.4s;
-        }
-        .send-btn:hover { background: var(--accent); color: white; transform: scale(1.02); box-shadow: 0 20px 50px rgba(255, 0, 60, 0.2); }
+        .submit-btn { background: white; color: black; border: none; padding: 20px 60px; border-radius: 50px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .submit-btn:hover { background: var(--accent); color: white; transform: translateY(-5px); }
 
-        /* Admin & Modal Players */
-        #video-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 5000; display: none; align-items: center; justify-content: center; }
-        #modal-player { width: 90%; max-height: 85vh; border-radius: 20px; box-shadow: 0 0 100px rgba(255, 0, 60, 0.1); }
+        /* Video Modal */
+        #video-modal { position: fixed; inset: 0; background: #000; z-index: 10000; display: none; align-items: center; justify-content: center; }
+        .modal-content { width: 90%; height: 80%; }
+        #full-player { width: 100%; height: 100%; border-radius: 20px; }
+
+        /* Admin Hub (Secondary Page Logic) */
+        #admin-panel { position: fixed; inset: 0; background: #080808; z-index: 50000; display: none; padding: 50px; overflow-y: auto; }
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
+        .admin-card { background: var(--dark-grey); padding: 30px; border-radius: 20px; border: 1px solid var(--accent); }
         
-        #admin-panel {
-            position: fixed; inset: 0; background: var(--black); z-index: 10001;
-            padding: 60px; overflow-y: auto; display: none;
-        }
-        .admin-card { max-width: 800px; margin: 0 auto; background: #0a0a0a; padding: 50px; border-radius: 40px; border: 1px solid var(--border); }
-        .admin-input { background: #151515; border: 1px solid var(--border); padding: 15px; width: 100%; color: white; border-radius: 12px; margin-bottom: 15px; }
-
-        /* GSAP Reveal */
-        .reveal { opacity: 0; transform: translateY(60px); transition: 1s cubic-bezier(0.2, 1, 0.3, 1); }
-        .reveal.active { opacity: 1; transform: translateY(0); }
-
-        @media (max-width: 1024px) {
-            .pricing-section, .contact-section, .pricing-grid, .bento-grid { grid-template-columns: 1fr; }
-            nav { padding: 20px; }
+        @media (max-width: 768px) {
+            .pricing-section, .admin-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+            .contact-methods { flex-direction: column; gap: 40px; text-align: center; }
         }
     </style>
 </head>
 <body>
 
+    <div class="cursor"></div><div class="cursor-f"></div>
+    <div id="admin-trigger" style="position:fixed; bottom:10px; right:10px; opacity:0.1; cursor:pointer;" onclick="showAdmin()">ENG_SYS</div>
+
     <nav>
-        <div class="logo">GLYDRA</div>
         <div class="nav-links">
-            <a href="#work">PROJECTS</a>
-            <a href="#pricing">SERVICES</a>
-            <a href="#contact">CONTACT</a>
+            <a href="#projects">PROJECTS</a>
+            <a href="#pricing">PRICING</a>
         </div>
-        <div onclick="toggleAdmin()" style="opacity: 0.1; cursor: pointer; font-size: 10px;">SYSTEM_ACCESS</div>
+        <div class="logo">GLYDRA</div>
+        <div class="cta-nav" onclick="document.getElementById('contact').scrollIntoView()">LET'S MAKE MAGIC</div>
     </nav>
 
-    <section id="home" class="hero">
-        <video autoplay muted loop playsinline id="hero-vid">
-            <source src="FINAL BIG GLYDRA0001-0310.mp4" type="video/mp4">
-        </video>
-        <h1 class="hero-title">GLYDRA</h1>
-        <p class="hero-tag">A NEW ERA OF VISUALS</p>
-    </section>
+    <main>
+        <section class="hero">
+            <video autoplay muted loop playsinline class="hero-video">
+                <source src="FINAL BIG GLYDRA0001-0310.mp4" type="video/mp4">
+            </video>
+            <div class="hero-content">
+                <p>EST. 2026</p>
+                <h1>GLYDRA<br>STUDIO</h1>
+                <p>BEYOND VISUALS</p>
+            </div>
+        </section>
 
-    <div id="work" class="gallery-container">
-        <h2 class="reveal" style="margin-bottom: 50px;">Selected Films</h2>
-        <div id="gallery" class="bento-grid">
-            </div>
-    </div>
+        <section class="gallery-section" id="projects">
+            <h2 class="section-title">SELECTED WORKS</h2>
+            <div id="main-gallery" class="bento-grid">
+                </div>
+        </section>
 
-    <section id="pricing" class="pricing-section">
-        <div class="pricing-grid">
-            <div class="price-card reveal">
-                <h3>IGNITE</h3>
-                <ul>
-                    <li>15 Seconds High-Impact Motion</li>
-                    <li>4K Cinematic Rendering</li>
-                    <li>Sound Design & SFX</li>
-                </ul>
+        <section class="pricing-section" id="pricing">
+            <div>
+                <h2 class="section-title">PACKAGES</h2>
+                <div class="pricing-grid">
+                    <div class="price-card">
+                        <h4>IGNITE</h4>
+                        <span class="amount">$299</span>
+                        <ul><li>Basic 3D Render</li><li>1 Revision</li><li>7-Day Delivery</li></ul>
+                    </div>
+                    <div class="price-card" style="border-color: var(--accent);">
+                        <h4>ELEVATE</h4>
+                        <span class="amount">$599</span>
+                        <ul><li>Full Motion Design</li><li>3 Revisions</li><li>Source Files</li></ul>
+                    </div>
+                    <div class="price-card">
+                        <h4>APEX</h4>
+                        <span class="amount">$999</span>
+                        <ul><li>Cinematic Production</li><li>Unlimited Revisions</li><li>VIP Support</li></ul>
+                    </div>
+                </div>
             </div>
-            <div class="price-card reveal">
-                <h3>ELEVATE</h3>
-                <ul>
-                    <li>30 Seconds Visual Storytelling</li>
-                    <li>Premium Lighting & VFX</li>
-                    <li>Brand-Tailored Color Grade</li>
-                </ul>
+            <div class="addons-sidebar">
+                <h3>EXTRA ADD-ONS</h3>
+                <p>+ Raw Files ($100)</p>
+                <p>+ Fast Delivery ($150)</p>
+                <p>+ Commercial Rights ($200)</p>
             </div>
-            <div class="price-card reveal">
-                <h3>APEX</h3>
-                <ul>
-                    <li>60+ Seconds Masterpiece</li>
-                    <li>Full Scripting & Storyboarding</li>
-                    <li>Priority Rendering Pipeline</li>
-                </ul>
-            </div>
-        </div>
-        <div class="addons-box reveal">
-            <h4>ADDITIONAL SERVICES</h4>
-            <div class="addon"><span>EXPRESS RENDER</span><span>+30%</span></div>
-            <div class="addon"><span>RAW ASSETS</span><span>+$400</span></div>
-            <div class="addon"><span>CUSTOM OST</span><span>+$150</span></div>
-        </div>
-    </section>
+        </section>
 
-    <section id="contact" class="contact-section">
-        <div class="contact-typo">
-            <h2 class="reveal">LET'S<br>MAKE<br>MAGIC</h2>
-            <div class="contact-info reveal">
-                <a href="mailto:glydra.studios.contact@gmail.com">GLYDRA.STUDIOS@GMAIL.COM</a><br><br>
-                <a href="tel:+201280022629">+20 128 002 2629</a>
+        <section class="contact-container" id="contact">
+            <div class="contact-big-text">HAVE A PROJECT?<br>LET'S MAKE MAGIC</div>
+            <div class="contact-methods">
+                <div class="method"><h4>CALL US</h4><p>+20 1286754323</p></div>
+                <div class="method"><h4>EMAIL</h4><p>glydra.studios@gmail.com</p></div>
             </div>
-        </div>
-        <div class="form-container reveal">
-            <div class="form-group"><input type="text" id="c-name" placeholder="NAME"></div>
-            <div class="form-group"><textarea id="c-task" rows="5" placeholder="PROJECT VISION"></textarea></div>
-            <button class="send-btn" onclick="sendWhatsApp()">SEND TO WHATSAPP</button>
-        </div>
-    </section>
+            <div class="form-box">
+                <input type="text" id="user-name" placeholder="YOUR NAME">
+                <input type="text" id="user-company" placeholder="COMPANY NAME">
+                <textarea id="user-msg" rows="4" placeholder="PROJECT DETAILS"></textarea>
+                <button class="submit-btn" onclick="sendToWhatsApp()">SEND REQUEST</button>
+            </div>
+        </section>
+    </main>
 
     <div id="video-modal" onclick="closeVideo()">
-        <span style="position:absolute; top:40px; right:40px; cursor:pointer; font-size:30px;">×</span>
-        <video id="modal-player" controls autoplay></video>
+        <div class="modal-content">
+            <video id="full-player" controls autoplay></video>
+        </div>
     </div>
 
     <div id="admin-panel">
-        <div class="admin-card">
-            <h2 style="color: var(--accent); margin-bottom: 30px;">Admin Hub v3</h2>
-            <div id="admin-auth">
-                <input type="password" id="admin-pass" class="admin-input" placeholder="Enter Access Key">
-                <button class="send-btn" onclick="verifyAdmin()">ACCESS ENGINE</button>
-            </div>
-            <div id="admin-main" style="display:none;">
-                <input type="text" id="v-name" class="admin-input" placeholder="Project Name">
-                <input type="text" id="v-preview" class="admin-input" placeholder="Preview URL (MP4)">
-                <input type="text" id="v-full" class="admin-input" placeholder="Full Film URL (MP4)">
-                <select id="v-size" class="admin-input">
-                    <option value="standard">Standard</option>
-                    <option value="wide">Wide (16:9)</option>
-                    <option value="tall">Tall (9:16)</option>
+        <h1 style="color:var(--accent); margin-bottom:40px;">ADMIN HUB / ASSET MANAGER</h1>
+        <div class="admin-grid">
+            <div class="admin-card">
+                <h3>ADD NEW PROJECT</h3>
+                <input type="text" id="v-title" placeholder="Project Title">
+                <input type="text" id="v-type" placeholder="Work Type (e.g. 3D Design)">
+                <input type="text" id="v-thumb" placeholder="Preview MP4 URL">
+                <input type="text" id="v-full" placeholder="Full Film URL">
+                <select id="v-size" style="width:100%; padding:15px; background:transparent; border:1px solid rgba(255,255,255,0.1); color:white; margin-bottom:20px;">
+                    <option value="standard">Standard Box</option>
+                    <option value="wide">Wide (2 Columns)</option>
+                    <option value="tall">Tall (2 Rows)</option>
                 </select>
-                <button class="send-btn" onclick="saveProject()">DEPLOY PROJECT</button>
-                <div id="admin-list" style="margin-top: 40px; border-top: 1px solid var(--border); padding-top: 20px;"></div>
-                <button onclick="toggleAdmin()" style="margin-top:20px; color:gray; background:none; border:none; cursor:pointer;">Exit Hub</button>
+                <button class="submit-btn" onclick="uploadProject()" style="width:100%;">DEPLOY TO SITE</button>
+                <button class="submit-btn" onclick="hideAdmin()" style="width:100%; margin-top:10px; background:transparent; color:white; border:1px solid white;">EXIT</button>
             </div>
+            <div class="admin-card" id="current-projects">
+                <h3>CURRENT ASSETS</h3>
+                </div>
         </div>
     </div>
 
     <script>
-        // Firebase Config (Replacing with your provided keys)
+        // FIREBASE INITIALIZATION
         const firebaseConfig = {
             apiKey: "AIzaSyDTVlcGCfeDZD xLjx-j5pPutvm9tpg2wCk",
             authDomain: "glydra-f8004.firebaseapp.com",
@@ -262,80 +217,82 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database().ref('projects');
 
-        // Cinematic Reveals
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('active'); });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        // GSAP CURSOR
+        const cur = document.querySelector('.cursor'), fol = document.querySelector('.cursor-f');
+        window.addEventListener('mousemove', e => {
+            gsap.to(cur, {x: e.clientX, y: e.clientY, duration: 0.1});
+            gsap.to(fol, {x: e.clientX - 15, y: e.clientY - 15, duration: 0.3});
+        });
 
-        // Data Sync
-        db.on('value', snap => {
-            const gallery = document.getElementById('gallery');
-            const list = document.getElementById('admin-list');
-            gallery.innerHTML = ""; list.innerHTML = "";
+        // ADMIN LOGIC
+        function showAdmin() {
+            let pass = prompt("Enter Passkey:");
+            if(pass === "0512") document.getElementById('admin-panel').style.display = 'block';
+        }
+        function hideAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
+
+        function uploadProject() {
+            const data = {
+                title: document.getElementById('v-title').value,
+                type: document.getElementById('v-type').value,
+                thumb: document.getElementById('v-thumb').value,
+                full: document.getElementById('v-full').value,
+                size: document.getElementById('v-size').value
+            };
+            db.push(data);
+            alert("Project Live!");
+            location.reload();
+        }
+
+        // LOAD PROJECTS (Bento Grid)
+        db.on('value', (snap) => {
+            const container = document.getElementById('main-gallery');
+            const adminList = document.getElementById('current-projects');
+            container.innerHTML = "";
+            adminList.innerHTML = "<h3>CURRENT ASSETS</h3>";
+            
             const data = snap.val();
-
             if(data) {
-                Object.keys(data).forEach(k => {
-                    const p = data[k];
-                    // Render UI
-                    gallery.insertAdjacentHTML('beforeend', `
-                        <div class="bento-item ${p.size}" onclick="openVideo('${p.full}')">
-                            <video muted loop autoplay playsinline><source src="${p.preview}"></video>
-                            <div class="overlay"><h3>${p.name}</h3></div>
+                Object.keys(data).forEach(key => {
+                    const p = data[key];
+                    // Client Side
+                    container.insertAdjacentHTML('beforeend', `
+                        <div class="project-card ${p.size}" onclick="openVideo('${p.full}')">
+                            <video autoplay muted loop playsinline><source src="${p.thumb}"></video>
+                            <div class="card-info">
+                                <p>${p.type}</p>
+                                <h3>${p.title}</h3>
+                            </div>
                         </div>
                     `);
-                    // Render Admin List
-                    list.insertAdjacentHTML('beforeend', `
-                        <div style="display:flex; justify-content:space-between; padding:10px; background:#111; margin-bottom:10px; border-radius:8px;">
-                            <span>${p.name}</span>
-                            <button onclick="deleteP('${k}')" style="color:red; background:none; border:none; cursor:pointer;">Delete</button>
+                    // Admin Side
+                    adminList.insertAdjacentHTML('beforeend', `
+                        <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;">
+                            <span>${p.title}</span>
+                            <button onclick="deleteProject('${key}')" style="color:red; background:none; border:none; cursor:pointer;">DELETE</button>
                         </div>
                     `);
                 });
             }
+            gsap.from(".project-card", { opacity: 0, y: 50, stagger: 0.2, scrollTrigger: ".bento-grid" });
         });
 
-        // Core Actions
-        function openVideo(url) {
-            document.getElementById('modal-player').src = url;
+        function deleteProject(key) { if(confirm("Delete this work?")) db.child(key).remove(); }
+        function openVideo(url) { 
+            document.getElementById('full-player').src = url;
             document.getElementById('video-modal').style.display = 'flex';
         }
-        function closeVideo() {
-            const v = document.getElementById('modal-player');
-            v.pause(); v.src = "";
+        function closeVideo() { 
             document.getElementById('video-modal').style.display = 'none';
-        }
-        function sendWhatsApp() {
-            const n = document.getElementById('c-name').value;
-            const t = document.getElementById('c-task').value;
-            window.open(`https://wa.me/201280022629?text=Hello Glydra! I am ${n}. Vision: ${t}`);
+            document.getElementById('full-player').src = "";
         }
 
-        // Admin Logic
-        function toggleAdmin() { 
-            const p = document.getElementById('admin-panel');
-            p.style.display = (p.style.display === 'block') ? 'none' : 'block';
+        function sendToWhatsApp() {
+            const name = document.getElementById('user-name').value;
+            const company = document.getElementById('user-company').value;
+            const msg = document.getElementById('user-msg').value;
+            window.open(`https://wa.me/201280022629?text=Hello Glydra!%0AFrom: ${name} (${company})%0ADetails: ${msg}`);
         }
-        function verifyAdmin() {
-            if(document.getElementById('admin-pass').value === "0512") {
-                document.getElementById('admin-auth').style.display = 'none';
-                document.getElementById('admin-main').style.display = 'block';
-            } else { alert("Access Denied"); }
-        }
-        async function saveProject() {
-            const proj = {
-                name: document.getElementById('v-name').value,
-                preview: document.getElementById('v-preview').value,
-                full: document.getElementById('v-full').value,
-                size: document.getElementById('v-size').value
-            };
-            if(!proj.name || !proj.preview) return alert("Required fields empty");
-            await db.push(proj);
-            alert("Live on Site!");
-            document.querySelectorAll('.admin-input').forEach(i => i.value = "");
-        }
-        function deleteP(k) { if(confirm("Delete Project?")) db.child(k).remove(); }
     </script>
 </body>
 </html>
