@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLYDRA | High-End 3D Production Studio</title>
+    <title>GLYDRA | Cinematic Studio</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;900&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -13,395 +13,236 @@
 
     <style>
         :root {
-            --burgundy: #2e0108;
+            --burgundy: #2b0106;
             --accent: #ff003c;
-            --black: #080808;
-            --white: #ffffff;
+            --dark-bg: #050505;
             --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            background: var(--black); 
-            color: var(--white); 
+            background: var(--dark-bg); 
+            color: white; 
             font-family: 'Inter', sans-serif; 
             overflow-x: hidden;
-            cursor: none; 
+            cursor: crosshair;
         }
 
-        h1, h2, h3, .logo { font-family: 'Outfit', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
+        h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; }
 
-        /* Custom Cursor */
-        #cursor { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; position: fixed; pointer-events: none; z-index: 10000; mix-blend-mode: difference; }
-        #cursor-follower { width: 40px; height: 40px; border: 1px solid var(--accent); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transition: transform 0.15s ease-out; }
-
-        /* Layout Helpers */
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 5%; }
-        section { padding: 100px 0; position: relative; }
-
-        /* --- NAVIGATION (Sketch 1) --- */
-        nav { 
-            position: fixed; top: 0; width: 100%; padding: 30px 5%; 
-            display: flex; justify-content: space-between; align-items: center; 
-            z-index: 1000; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+        /* Smooth Background Gradient */
+        .bg-glow {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, var(--burgundy) 0%, var(--dark-bg) 100%);
+            z-index: -1; opacity: 0.6;
         }
-        .nav-links { display: flex; gap: 30px; font-size: 12px; opacity: 0.7; }
+
+        nav {
+            position: fixed; top: 0; width: 100%; padding: 30px 60px;
+            display: flex; justify-content: space-between; align-items: center; z-index: 1000;
+        }
+        .nav-links { display: flex; gap: 40px; font-size: 11px; letter-spacing: 2px; opacity: 0.6; }
         .nav-links a { color: white; text-decoration: none; transition: 0.3s; }
         .nav-links a:hover { color: var(--accent); opacity: 1; }
-        .social-icons { display: flex; gap: 20px; font-size: 18px; }
 
-        /* --- HERO SECTION (Sketch 1) --- */
-        .hero { height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .hero-video-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.4; }
-        .hero-content { position: relative; text-align: center; z-index: 5; }
-        .hero-content h1 { font-size: clamp(4rem, 15vw, 10rem); font-weight: 800; line-height: 0.9; margin-bottom: 20px; }
-        .hero-content p { font-size: 14px; letter-spacing: 8px; opacity: 0.6; }
+        /* Hero Section */
+        .hero { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .hero h1 { font-size: clamp(5rem, 15vw, 12rem); font-weight: 900; line-height: 0.8; letter-spacing: -5px; margin-bottom: 20px; }
+        .hero p { font-size: 12px; letter-spacing: 10px; opacity: 0.5; }
 
-        /* --- BENTO GALLERY (Sketch 5) --- */
-        .gallery-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-            grid-auto-rows: 250px; 
-            gap: 20px; 
-            padding: 50px 0;
+        /* Bento Gallery (Sketch 5) */
+        .bento-container { padding: 100px 5%; display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 300px; gap: 20px; }
+        .bento-item { 
+            background: #111; border-radius: 24px; overflow: hidden; position: relative; 
+            border: 1px solid rgba(255,255,255,0.05); transition: 0.5s; cursor: pointer;
         }
-        .project-card { 
-            position: relative; border-radius: 20px; overflow: hidden; background: #111; 
-            border: 1px solid var(--border); transition: 0.5s cubic-bezier(0.2, 1, 0.3, 1);
-            cursor: pointer;
-        }
-        .project-card.wide { grid-column: span 2; }
-        .project-card.tall { grid-row: span 2; }
-        .project-card:hover { transform: scale(1.02); border-color: var(--accent); }
-        .project-card video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.5s; }
-        .project-card:hover video { opacity: 1; }
-        .project-meta { 
-            position: absolute; bottom: 0; left: 0; width: 100%; padding: 30px; 
-            background: linear-gradient(transparent, rgba(0,0,0,0.9)); 
-        }
+        .bento-item:hover { border-color: var(--accent); transform: scale(0.98); }
+        .bento-item video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
+        .bento-item.large { grid-column: span 2; grid-row: span 2; }
+        .bento-item.wide { grid-column: span 2; }
 
-        /* --- PRICING (Sketch 2) --- */
-        .pricing-layout { display: grid; grid-template-columns: 1fr 300px; gap: 40px; }
-        .pricing-tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .tier-card { background: var(--glass); padding: 40px; border-radius: 25px; border: 1px solid var(--border); transition: 0.3s; }
-        .tier-card:hover { background: rgba(255,255,255,0.05); transform: translateY(-10px); border-color: var(--accent); }
-        .tier-card h3 { color: var(--accent); margin-bottom: 20px; }
-        .tier-card ul { list-style: none; opacity: 0.7; font-size: 14px; margin-bottom: 30px; }
-        .tier-card li { margin-bottom: 10px; }
+        /* Packages (Sketch 2) */
+        .pricing-section { padding: 100px 5%; display: grid; grid-template-columns: 1fr 320px; gap: 40px; }
+        .packages-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .package-card { 
+            background: var(--glass); padding: 40px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px); transition: 0.4s;
+        }
+        .package-card:hover { background: rgba(43, 1, 6, 0.3); border-color: var(--accent); transform: translateY(-10px); }
+        .package-card h3 { color: var(--accent); font-size: 24px; margin-bottom: 20px; }
+        .package-card ul { list-style: none; opacity: 0.6; font-size: 14px; line-height: 2; }
         
-        .addons-sidebar { background: var(--burgundy); padding: 40px; border-radius: 25px; height: fit-content; }
-        .addons-sidebar h4 { margin-bottom: 20px; font-size: 12px; opacity: 0.5; }
+        .extra-addons { background: var(--burgundy); border-radius: 30px; padding: 40px; height: fit-content; }
+        .extra-addons h4 { font-size: 14px; margin-bottom: 20px; opacity: 0.5; }
+        .addon-item { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 13px; font-weight: 600; }
 
-        /* --- CONTACT (Sketch 3 & 4) --- */
-        .contact-flex { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; padding-bottom: 150px; }
-        .huge-text { font-size: clamp(3rem, 6vw, 6rem); line-height: 1; font-weight: 800; color: var(--accent); }
-        .contact-info { margin-top: 40px; font-size: 24px; }
-        .contact-info a { color: white; text-decoration: none; display: block; margin-bottom: 10px; opacity: 0.8; }
-
+        /* Contact Typo (Sketch 3 & 4) */
+        .contact-wrap { padding: 100px 5%; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; }
+        .huge-contact-text { font-size: clamp(3rem, 7vw, 8rem); font-weight: 900; line-height: 0.9; color: var(--accent); }
+        .form-box { background: var(--glass); padding: 50px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.05); }
         input, textarea { 
-            width: 100%; padding: 20px; background: var(--glass); border: 1px solid var(--border); 
-            border-radius: 15px; color: white; margin-bottom: 20px; font-family: inherit;
+            width: 100%; padding: 20px; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: white; margin-bottom: 30px; font-size: 16px; outline: none; transition: 0.3s;
         }
-        .submit-btn { 
-            background: var(--accent); color: white; border: none; padding: 20px 40px; 
-            border-radius: 15px; font-weight: 700; width: 100%; cursor: pointer; transition: 0.3s;
+        input:focus { border-color: var(--accent); }
+        .wa-btn { 
+            background: white; color: black; border: none; padding: 20px 40px; border-radius: 50px;
+            font-weight: 800; cursor: pointer; transition: 0.3s; width: 100%;
         }
+        .wa-btn:hover { background: var(--accent); color: white; transform: scale(1.02); }
 
-        /* --- MODAL PLAYER --- */
-        #video-modal { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; 
-            display: none; align-items: center; justify-content: center; padding: 40px;
-        }
-        .modal-close { position: absolute; top: 40px; right: 40px; font-size: 30px; cursor: pointer; }
-        #modal-video { max-width: 100%; max-height: 80vh; border-radius: 15px; box-shadow: 0 0 50px rgba(255,0,60,0.2); }
-
-        /* --- ADMIN HUB --- */
-        #admin-panel { 
-            position: fixed; inset: 0; background: var(--black); z-index: 10001; 
-            padding: 50px; overflow-y: auto; display: none; 
-        }
-        .admin-card { max-width: 800px; margin: 0 auto; background: #111; padding: 40px; border-radius: 30px; }
-        .project-list-item { 
-            display: flex; justify-content: space-between; padding: 15px; 
-            background: rgba(255,255,255,0.05); margin-bottom: 10px; border-radius: 10px;
-        }
-
-        @media (max-width: 1024px) {
-            .pricing-layout, .pricing-tiers, .contact-flex { grid-template-columns: 1fr; }
-            body { cursor: auto; }
-            #cursor, #cursor-follower { display: none; }
-        }
+        /* Transitions */
+        .reveal { opacity: 0; transform: translateY(50px); }
     </style>
 </head>
-<body id="main-body">
+<body>
 
-    <div id="cursor"></div>
-    <div id="cursor-follower"></div>
+    <div class="bg-glow"></div>
 
     <nav>
-        <div class="logo">GLYDRA</div>
+        <div style="font-weight: 900; letter-spacing: 5px;">GLYDRA</div>
         <div class="nav-links">
-            <a href="#home">Home</a>
-            <a href="#work">Work</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#contact">Contact</a>
+            <a href="#work">WORK</a>
+            <a href="#pricing">PACKAGES</a>
+            <a href="#contact">CONTACT</a>
         </div>
-        <div class="social-icons">
-            <span onclick="openAdmin()" style="opacity: 0.1; font-size: 10px; cursor: pointer;">ENGINE_ACCESS</span>
-        </div>
+        <div onclick="document.getElementById('admin').style.display='flex'" style="opacity:0.2; cursor:pointer">ADMIN</div>
     </nav>
 
-    <main>
-        <section id="home" class="hero">
-            <video autoplay muted loop playsinline class="hero-video-bg">
-                <source src="FINAL BIG GLYDRA0001-0310.mp4" type="video/mp4">
-            </video>
-            <div class="hero-content">
-                <p>PREMIER VISUAL STUDIO</p>
-                <h1>GLYDRA</h1>
-                <p>3D ANIMATION & MOTION DESIGN</p>
+    <section class="hero">
+        <p class="reveal">HIGH-END VISUAL PRODUCTION</p>
+        <h1 class="reveal">GLYDRA</h1>
+        <p class="reveal">CRAFTING DIGITAL MAGIC</p>
+    </section>
+
+    <div id="work" class="bento-container">
+        </div>
+
+    <section id="pricing" class="pricing-section">
+        <div class="packages-grid">
+            <div class="package-card reveal">
+                <h3>IGNITE</h3>
+                <ul>
+                    <li>15 Seconds Animation</li>
+                    <li>4K Cinematic Render</li>
+                    <li>Custom Sound Effects</li>
+                    <li>1 Revision</li>
+                </ul>
             </div>
-        </section>
-
-        <section id="work" class="container">
-            <h2 style="margin-bottom: 40px;">Selected Films</h2>
-            <div id="main-gallery" class="gallery-grid">
-                </div>
-        </section>
-
-        <section id="pricing" class="container">
-            <div class="pricing-layout">
-                <div class="pricing-tiers">
-                    <div class="tier-card">
-                        <h3>Ignite</h3>
-                        <ul>
-                            <li>15s Product Visual</li>
-                            <li>4K Rendering</li>
-                            <li>Sound Design</li>
-                        </ul>
-                        <p>Perfect for social launches.</p>
-                    </div>
-                    <div class="tier-card">
-                        <h3>Elevate</h3>
-                        <ul>
-                            <li>30s Full Showcase</li>
-                            <li>Cinematic Lighting</li>
-                            <li>2 Revision Rounds</li>
-                        </ul>
-                        <p>High-end brand storytelling.</p>
-                    </div>
-                    <div class="tier-card">
-                        <h3>Apex</h3>
-                        <ul>
-                            <li>60s Masterpiece</li>
-                            <li>Advanced Simulations</li>
-                            <li>Unlimited Revisions</li>
-                        </ul>
-                        <p>The gold standard.</p>
-                    </div>
-                </div>
-                <div class="addons-sidebar">
-                    <h4>EXTRA ADD-ONS</h4>
-                    <p style="font-size: 14px; margin-bottom: 20px;">+ Raw Files Delivery</p>
-                    <p style="font-size: 14px; margin-bottom: 20px;">+ Expedited 48hr Turnaround</p>
-                    <p style="font-size: 14px; margin-bottom: 20px;">+ Multi-format Exports</p>
-                </div>
+            <div class="package-card reveal">
+                <h3>ELEVATE</h3>
+                <ul>
+                    <li>30 Seconds Animation</li>
+                    <li>Premium Lighting & Textures</li>
+                    <li>Motion Graphics Overlays</li>
+                    <li>3 Revisions</li>
+                </ul>
             </div>
-        </section>
-
-        <section id="contact" class="container">
-            <div class="contact-flex">
-                <div>
-                    <h2 class="huge-text">LET'S MAKE MAGIC</h2>
-                    <div class="contact-info">
-                        <a href="tel:+201280022629">+20 128 002 2629</a>
-                        <a href="mailto:glydra.studios.contact@gmail.com">glydra.studios.contact@gmail.com</a>
-                    </div>
-                </div>
-                <div>
-                    <input type="text" id="form-name" placeholder="Name">
-                    <input type="email" placeholder="Email Address">
-                    <textarea id="form-details" rows="5" placeholder="Tell us about your vision..."></textarea>
-                    <button class="submit-btn" onclick="sendWhatsApp()">SEND TO WHATSAPP</button>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <div id="video-modal">
-        <div class="modal-close" onclick="closeVideo()">×</div>
-        <video id="modal-video" controls autoplay></video>
-    </div>
-
-    <div id="admin-panel">
-        <div class="admin-card">
-            <h2 style="color: var(--accent); margin-bottom: 30px;">ADMIN HUB v3</h2>
-            <div id="admin-auth">
-                <input type="password" id="admin-pass" placeholder="Enter Access Key">
-                <button class="submit-btn" onclick="checkAdmin()">ACCESS DATABASE</button>
-            </div>
-            <div id="admin-main" style="display: none;">
-                <input type="text" id="v-title" placeholder="Project Title">
-                <textarea id="v-desc" placeholder="Brief Description"></textarea>
-                <input type="text" id="v-preview" placeholder="Preview URL (MP4)">
-                <input type="text" id="v-full" placeholder="Full Film URL (MP4)">
-                <select id="v-layout" style="width:100%; padding:20px; background:var(--glass); color:white; border-radius:15px; margin-bottom:20px;">
-                    <option value="standard">Standard (Square/Auto)</option>
-                    <option value="wide">Wide (16:9 - Bento Focus)</option>
-                    <option value="tall">Tall (9:16 - Bento Focus)</option>
-                </select>
-                <button class="submit-btn" id="save-btn" onclick="handleSave()">DEPLOY PROJECT</button>
-                <div id="admin-list" style="margin-top: 40px;"></div>
-                <button onclick="location.reload()" style="background:transparent; color:gray; border:none; margin-top:20px; cursor:pointer;">Logout</button>
+            <div class="package-card reveal">
+                <h3>APEX</h3>
+                <ul>
+                    <li>60+ Seconds Film</li>
+                    <li>Full Storyboard & Concept</li>
+                    <li>Raw Project Files</li>
+                    <li>Unlimited Revisions</li>
+                </ul>
             </div>
         </div>
+        <div class="extra-addons reveal">
+            <h4>EXTRA ADD-ONS</h4>
+            <div class="addon-item"><span>48H DELIVERY</span> <span>+30%</span></div>
+            <div class="addon-item"><span>RAW FILES</span> <span>+$200</span></div>
+            <div class="addon-item"><span>STORYBOARDING</span> <span>+$150</span></div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact-wrap">
+        <h2 class="huge-contact-text reveal">LET'S<br>MAKE<br>MAGIC</h2>
+        <div class="form-box reveal">
+            <input type="text" id="name" placeholder="YOUR NAME">
+            <input type="email" placeholder="EMAIL ADDRESS">
+            <textarea id="task" rows="4" placeholder="PROJECT DETAILS"></textarea>
+            <button class="wa-btn" onclick="sendWA()">SEND WHATSAPP</button>
+        </div>
+    </section>
+
+    <div id="admin" style="display:none; position:fixed; inset:0; background:black; z-index:2000; padding:50px; flex-direction:column; overflow-y:auto;">
+        <h2>Admin Hub</h2>
+        <input type="password" id="pass" placeholder="Passkey">
+        <input type="text" id="v_title" placeholder="Video Title">
+        <input type="text" id="v_preview" placeholder="Preview MP4 Link">
+        <input type="text" id="v_full" placeholder="Full MP4 Link">
+        <select id="v_style">
+            <option value="standard">Standard</option>
+            <option value="large">Large (Bento Square)</option>
+            <option value="wide">Wide (Bento Horizontal)</option>
+        </select>
+        <button class="wa-btn" onclick="saveProject()">DEPLOY PROJECT</button>
+        <button onclick="document.getElementById('admin').style.display='none'">CLOSE</button>
     </div>
 
     <script>
-        // Firebase Integration (Keeping your existing config)
+        // Firebase Setup
         const firebaseConfig = {
             apiKey: "AIzaSyDTVlcGCfeDZD xLjx-j5pPutvm9tpg2wCk",
-            authDomain: "glydra-f8004.firebaseapp.com",
             databaseURL: "https://glydra-f8004-default-rtdb.firebaseio.com",
-            projectId: "glydra-f8004",
-            storageBucket: "glydra-f8004.firebasestorage.app",
-            messagingSenderId: "9888688666",
-            appId: "1:9888688666:web:0ffb9104cfdb87b5507fa3"
+            projectId: "glydra-f8004"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database().ref('projects');
-        let editingId = null;
 
-        // Custom Cursor Logic
-        const cursor = document.getElementById('cursor');
-        const follower = document.getElementById('cursor-follower');
-        
-        window.addEventListener('mousemove', (e) => {
-            gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0 });
-            gsap.to(follower, { x: e.clientX - 15, y: e.clientY - 15, duration: 0.3 });
-        });
-
-        // GSAP Scroll Animations
+        // GSAP Animations
         gsap.registerPlugin(ScrollTrigger);
 
-        function initAnimations() {
-            gsap.from(".hero-content h1", { opacity: 0, y: 100, duration: 1.5, ease: "power4.out" });
-            gsap.from(".project-card", { 
-                scrollTrigger: "#work",
-                opacity: 0, y: 50, duration: 1, stagger: 0.2 
-            });
-            gsap.from(".tier-card", {
-                scrollTrigger: "#pricing",
-                opacity: 0, scale: 0.9, duration: 0.8, stagger: 0.2
+        function initAnim() {
+            gsap.utils.toArray('.reveal').forEach(elem => {
+                gsap.to(elem, {
+                    scrollTrigger: elem,
+                    opacity: 1, y: 0, duration: 1.2, ease: "power4.out", stagger: 0.2
+                });
             });
         }
 
-        // Project Handlers
-        db.on('value', (snap) => {
-            const data = snap.val();
-            const container = document.getElementById('main-gallery');
-            const adminList = document.getElementById('admin-list');
+        // Load Projects
+        db.on('value', snap => {
+            const container = document.getElementById('work');
             container.innerHTML = "";
-            adminList.innerHTML = "";
-
+            const data = snap.val();
             if(data) {
-                Object.keys(data).forEach(id => {
-                    const p = data[id];
-                    // Render to Front-end Gallery
+                Object.keys(data).forEach(k => {
+                    const p = data[k];
                     container.insertAdjacentHTML('beforeend', `
-                        <div class="project-card ${p.layout || 'standard'}" onclick="openVideo('${p.full}')">
+                        <div class="bento-item ${p.style || 'standard'}" onclick="window.open('${p.full}', '_blank')">
                             <video muted loop autoplay playsinline><source src="${p.preview}"></video>
-                            <div class="project-meta">
-                                <h3>${p.name}</h3>
-                                <p style="font-size:12px; opacity:0.6;">${p.desc}</p>
-                            </div>
-                        </div>
-                    `);
-
-                    // Render to Admin List
-                    adminList.insertAdjacentHTML('beforeend', `
-                        <div class="project-list-item">
-                            <span>${p.name}</span>
-                            <div>
-                                <button onclick="editProject('${id}')" style="color:orange; background:none; border:none; margin-right:10px;">Edit</button>
-                                <button onclick="deleteProject('${id}')" style="color:red; background:none; border:none;">Delete</button>
-                            </div>
+                            <div style="position:absolute; bottom:20px; left:20px; font-size:12px; font-weight:800;">${p.name}</div>
                         </div>
                     `);
                 });
             }
-            initAnimations();
+            initAnim();
         });
 
-        // Functional Logic
-        function openVideo(url) {
-            document.getElementById('modal-video').src = url;
-            document.getElementById('video-modal').style.display = 'flex';
-        }
-
-        function closeVideo() {
-            const v = document.getElementById('modal-video');
-            v.pause(); v.src = "";
-            document.getElementById('video-modal').style.display = 'none';
-        }
-
-        function sendWhatsApp() {
-            const name = document.getElementById('form-name').value;
-            const msg = document.getElementById('form-details').value;
-            window.open(`https://wa.me/201280022629?text=Hello Glydra! My name is ${name}. Project details: ${msg}`, '_blank');
-        }
-
-        // Admin Management
-        function openAdmin() { document.getElementById('admin-panel').style.display = 'block'; }
-        
-        async function checkAdmin() {
-            const pass = document.getElementById('admin-pass').value;
-            const snap = await firebase.database().ref('adminConfig/password').once('value');
-            if(pass === (snap.val() || "0512")) {
-                document.getElementById('admin-auth').style.display = 'none';
-                document.getElementById('admin-main').style.display = 'block';
-            } else { alert("Access Denied"); }
-        }
-
-        function handleSave() {
-            const data = {
-                name: document.getElementById('v-title').value,
-                desc: document.getElementById('v-desc').value,
-                preview: document.getElementById('v-preview').value,
-                full: document.getElementById('v-full').value,
-                layout: document.getElementById('v-layout').value
-            };
-
-            if(editingId) {
-                db.child(editingId).update(data);
-                editingId = null;
-                document.getElementById('save-btn').innerText = "DEPLOY PROJECT";
-            } else {
-                db.push(data);
-            }
+        async function saveProject() {
+            const pass = document.getElementById('pass').value;
+            if(pass !== "0512") return alert("Wrong Pass");
             
-            // Clear inputs
-            document.querySelectorAll('#admin-main input, #admin-main textarea').forEach(i => i.value = "");
-            alert("Database Updated Successfully");
-        }
-
-        function editProject(id) {
-            db.child(id).once('value', (snap) => {
-                const p = snap.val();
-                document.getElementById('v-title').value = p.name;
-                document.getElementById('v-desc').value = p.desc;
-                document.getElementById('v-preview').value = p.preview;
-                document.getElementById('v-full').value = p.full;
-                document.getElementById('v-layout').value = p.layout;
-                editingId = id;
-                document.getElementById('save-btn').innerText = "UPDATE PROJECT";
-                window.scrollTo({top: 0, behavior: 'smooth'});
+            await db.push({
+                name: document.getElementById('v_title').value,
+                preview: document.getElementById('v_preview').value,
+                full: document.getElementById('v_full').value,
+                style: document.getElementById('v_style').value
             });
+            location.reload();
         }
 
-        function deleteProject(id) { if(confirm("Permanently delete this project?")) db.child(id).remove(); }
+        function sendWA() {
+            const n = document.getElementById('name').value;
+            const t = document.getElementById('task').value;
+            window.open(`https://wa.me/201280022629?text=Hello Glydra! My name is ${n}. Project: ${t}`);
+        }
 
+        // Hero Init
+        gsap.to(".hero h1", { opacity: 1, scale: 1, duration: 2, ease: "expo.out" });
     </script>
 </body>
 </html>
