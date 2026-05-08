@@ -2,209 +2,264 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GLYDRA | PREMIER VISUAL STUDIO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLYDRA | High-End 3D Production Studio</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Inter:wght@300;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        :root { 
-            --burgundy: #4a010d; 
-            --accent: #ff003c; 
-            --black: #050505; 
-            --dark-grey: #121212;
-            --glass: rgba(15, 15, 15, 0.85); 
+        :root {
+            --burgundy: #2e0108;
+            --accent: #ff003c;
+            --black: #080808;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
         }
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--black); color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; line-height: 1.6; }
-        h1, h2, h3, .logo { font-family: 'Outfit', sans-serif; text-transform: uppercase; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: var(--black); 
+            color: var(--white); 
+            font-family: 'Inter', sans-serif; 
+            overflow-x: hidden;
+            cursor: none; 
+        }
+
+        h1, h2, h3, .logo { font-family: 'Outfit', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
 
         /* Custom Cursor */
-        .cursor { width: 10px; height: 10px; background: white; border-radius: 50%; position: fixed; z-index: 10000; pointer-events: none; mix-blend-mode: difference; }
-        .cursor-f { width: 35px; height: 35px; border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; position: fixed; z-index: 9999; pointer-events: none; transition: transform 0.15s ease; }
+        #cursor { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; position: fixed; pointer-events: none; z-index: 10000; mix-blend-mode: difference; }
+        #cursor-follower { width: 40px; height: 40px; border: 1px solid var(--accent); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transition: transform 0.15s ease-out; }
 
-        /* Navigation (Sketch 1) */
-        nav { position: fixed; top: 0; width: 100%; padding: 20px 50px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); backdrop-filter: blur(10px); }
-        .nav-links { display: flex; gap: 30px; font-size: 0.8rem; letter-spacing: 2px; }
-        .nav-links a { color: white; text-decoration: none; opacity: 0.7; transition: 0.3s; }
-        .nav-links a:hover { opacity: 1; color: var(--accent); }
-        .logo { font-size: 1.5rem; font-weight: 600; letter-spacing: 10px; text-align: center; flex-grow: 1; margin-left: -50px; }
-        .cta-nav { padding: 10px 20px; border: 1px solid white; border-radius: 50px; font-size: 0.7rem; cursor: pointer; transition: 0.3s; }
-        .cta-nav:hover { background: white; color: black; }
+        /* Layout Helpers */
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 5%; }
+        section { padding: 100px 0; position: relative; }
 
-        /* Hero Section (Sketch 1) */
-        .hero { position: relative; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; filter: brightness(0.4); }
-        .hero-content { position: relative; z-index: 2; text-align: center; }
-        .hero h1 { font-size: clamp(4rem, 15vw, 10rem); line-height: 0.9; margin-bottom: 20px; }
-        .hero p { letter-spacing: 8px; font-size: 0.9rem; opacity: 0.6; }
+        /* --- NAVIGATION (Sketch 1) --- */
+        nav { 
+            position: fixed; top: 0; width: 100%; padding: 30px 5%; 
+            display: flex; justify-content: space-between; align-items: center; 
+            z-index: 1000; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+        }
+        .nav-links { display: flex; gap: 30px; font-size: 12px; opacity: 0.7; }
+        .nav-links a { color: white; text-decoration: none; transition: 0.3s; }
+        .nav-links a:hover { color: var(--accent); opacity: 1; }
+        .social-icons { display: flex; gap: 20px; font-size: 18px; }
 
-        /* Bento Gallery (Sketch 5) */
-        .gallery-section { padding: 100px 5%; }
-        .section-title { font-size: 3rem; margin-bottom: 50px; border-left: 5px solid var(--accent); padding-left: 20px; }
-        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); grid-auto-rows: 300px; gap: 20px; }
-        .project-card { position: relative; border-radius: 20px; overflow: hidden; background: var(--dark-grey); cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.5s cubic-bezier(0.2, 1, 0.3, 1); }
-        .project-card:hover { transform: scale(0.98); border-color: var(--accent); }
+        /* --- HERO SECTION (Sketch 1) --- */
+        .hero { height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .hero-video-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.4; }
+        .hero-content { position: relative; text-align: center; z-index: 5; }
+        .hero-content h1 { font-size: clamp(4rem, 15vw, 10rem); font-weight: 800; line-height: 0.9; margin-bottom: 20px; }
+        .hero-content p { font-size: 14px; letter-spacing: 8px; opacity: 0.6; }
+
+        /* --- BENTO GALLERY (Sketch 5) --- */
+        .gallery-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            grid-auto-rows: 250px; 
+            gap: 20px; 
+            padding: 50px 0;
+        }
+        .project-card { 
+            position: relative; border-radius: 20px; overflow: hidden; background: #111; 
+            border: 1px solid var(--border); transition: 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+            cursor: pointer;
+        }
         .project-card.wide { grid-column: span 2; }
         .project-card.tall { grid-row: span 2; }
-        .project-card video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: 0.5s; }
-        .project-card:hover video { opacity: 1; transform: scale(1.05); }
-        .card-info { position: absolute; bottom: 30px; left: 30px; z-index: 3; pointer-events: none; }
-        .card-info h3 { font-size: 1.5rem; margin-bottom: 5px; }
-        .card-info p { font-size: 0.8rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 2px; }
+        .project-card:hover { transform: scale(1.02); border-color: var(--accent); }
+        .project-card video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.5s; }
+        .project-card:hover video { opacity: 1; }
+        .project-meta { 
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 30px; 
+            background: linear-gradient(transparent, rgba(0,0,0,0.9)); 
+        }
 
-        /* Pricing (Sketch 2) */
-        .pricing-section { padding: 100px 10%; display: grid; grid-template-columns: 2fr 1fr; gap: 40px; background: rgba(255,255,255,0.01); }
-        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-        .price-card { background: var(--dark-grey); padding: 40px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
-        .price-card h4 { color: var(--accent); margin-bottom: 20px; }
-        .price-card .amount { font-size: 2.5rem; font-weight: 600; margin-bottom: 20px; display: block; }
-        .price-card ul { list-style: none; margin-bottom: 30px; text-align: left; font-size: 0.9rem; opacity: 0.8; }
-        .price-card ul li { margin-bottom: 10px; }
-        .addons-sidebar { background: var(--burgundy); padding: 40px; border-radius: 25px; display: flex; flex-direction: column; gap: 20px; }
-
-        /* Contact (Sketch 3/4) */
-        .contact-container { padding: 100px 10%; display: flex; flex-direction: column; align-items: center; }
-        .contact-big-text { font-size: clamp(2rem, 8vw, 5rem); font-weight: 600; text-align: center; line-height: 1.1; margin-bottom: 80px; }
-        .contact-methods { display: flex; gap: 100px; margin-bottom: 100px; }
-        .method h4 { opacity: 0.4; margin-bottom: 15px; }
-        .method p { font-size: 1.5rem; font-weight: 500; }
-
-        .form-box { width: 100%; max-width: 800px; background: var(--dark-grey); padding: 60px; border-radius: 40px; }
-        input, textarea { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 20px 0; color: white; font-size: 1.1rem; margin-bottom: 30px; outline: none; }
-        input:focus, textarea:focus { border-color: var(--accent); }
-        .submit-btn { background: white; color: black; border: none; padding: 20px 60px; border-radius: 50px; font-weight: 600; cursor: pointer; transition: 0.3s; }
-        .submit-btn:hover { background: var(--accent); color: white; transform: translateY(-5px); }
-
-        /* Video Modal */
-        #video-modal { position: fixed; inset: 0; background: #000; z-index: 10000; display: none; align-items: center; justify-content: center; }
-        .modal-content { width: 90%; height: 80%; }
-        #full-player { width: 100%; height: 100%; border-radius: 20px; }
-
-        /* Admin Hub (Secondary Page Logic) */
-        #admin-panel { position: fixed; inset: 0; background: #080808; z-index: 50000; display: none; padding: 50px; overflow-y: auto; }
-        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
-        .admin-card { background: var(--dark-grey); padding: 30px; border-radius: 20px; border: 1px solid var(--accent); }
+        /* --- PRICING (Sketch 2) --- */
+        .pricing-layout { display: grid; grid-template-columns: 1fr 300px; gap: 40px; }
+        .pricing-tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .tier-card { background: var(--glass); padding: 40px; border-radius: 25px; border: 1px solid var(--border); transition: 0.3s; }
+        .tier-card:hover { background: rgba(255,255,255,0.05); transform: translateY(-10px); border-color: var(--accent); }
+        .tier-card h3 { color: var(--accent); margin-bottom: 20px; }
+        .tier-card ul { list-style: none; opacity: 0.7; font-size: 14px; margin-bottom: 30px; }
+        .tier-card li { margin-bottom: 10px; }
         
-        @media (max-width: 768px) {
-            .pricing-section, .admin-grid { grid-template-columns: 1fr; }
-            .nav-links { display: none; }
-            .contact-methods { flex-direction: column; gap: 40px; text-align: center; }
+        .addons-sidebar { background: var(--burgundy); padding: 40px; border-radius: 25px; height: fit-content; }
+        .addons-sidebar h4 { margin-bottom: 20px; font-size: 12px; opacity: 0.5; }
+
+        /* --- CONTACT (Sketch 3 & 4) --- */
+        .contact-flex { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; padding-bottom: 150px; }
+        .huge-text { font-size: clamp(3rem, 6vw, 6rem); line-height: 1; font-weight: 800; color: var(--accent); }
+        .contact-info { margin-top: 40px; font-size: 24px; }
+        .contact-info a { color: white; text-decoration: none; display: block; margin-bottom: 10px; opacity: 0.8; }
+
+        input, textarea { 
+            width: 100%; padding: 20px; background: var(--glass); border: 1px solid var(--border); 
+            border-radius: 15px; color: white; margin-bottom: 20px; font-family: inherit;
+        }
+        .submit-btn { 
+            background: var(--accent); color: white; border: none; padding: 20px 40px; 
+            border-radius: 15px; font-weight: 700; width: 100%; cursor: pointer; transition: 0.3s;
+        }
+
+        /* --- MODAL PLAYER --- */
+        #video-modal { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; 
+            display: none; align-items: center; justify-content: center; padding: 40px;
+        }
+        .modal-close { position: absolute; top: 40px; right: 40px; font-size: 30px; cursor: pointer; }
+        #modal-video { max-width: 100%; max-height: 80vh; border-radius: 15px; box-shadow: 0 0 50px rgba(255,0,60,0.2); }
+
+        /* --- ADMIN HUB --- */
+        #admin-panel { 
+            position: fixed; inset: 0; background: var(--black); z-index: 10001; 
+            padding: 50px; overflow-y: auto; display: none; 
+        }
+        .admin-card { max-width: 800px; margin: 0 auto; background: #111; padding: 40px; border-radius: 30px; }
+        .project-list-item { 
+            display: flex; justify-content: space-between; padding: 15px; 
+            background: rgba(255,255,255,0.05); margin-bottom: 10px; border-radius: 10px;
+        }
+
+        @media (max-width: 1024px) {
+            .pricing-layout, .pricing-tiers, .contact-flex { grid-template-columns: 1fr; }
+            body { cursor: auto; }
+            #cursor, #cursor-follower { display: none; }
         }
     </style>
 </head>
-<body>
+<body id="main-body">
 
-    <div class="cursor"></div><div class="cursor-f"></div>
-    <div id="admin-trigger" style="position:fixed; bottom:10px; right:10px; opacity:0.1; cursor:pointer;" onclick="showAdmin()">ENG_SYS</div>
+    <div id="cursor"></div>
+    <div id="cursor-follower"></div>
 
     <nav>
-        <div class="nav-links">
-            <a href="#projects">PROJECTS</a>
-            <a href="#pricing">PRICING</a>
-        </div>
         <div class="logo">GLYDRA</div>
-        <div class="cta-nav" onclick="document.getElementById('contact').scrollIntoView()">LET'S MAKE MAGIC</div>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#work">Work</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#contact">Contact</a>
+        </div>
+        <div class="social-icons">
+            <span onclick="openAdmin()" style="opacity: 0.1; font-size: 10px; cursor: pointer;">ENGINE_ACCESS</span>
+        </div>
     </nav>
 
     <main>
-        <section class="hero">
-            <video autoplay muted loop playsinline class="hero-video">
+        <section id="home" class="hero">
+            <video autoplay muted loop playsinline class="hero-video-bg">
                 <source src="FINAL BIG GLYDRA0001-0310.mp4" type="video/mp4">
             </video>
             <div class="hero-content">
-                <p>EST. 2026</p>
-                <h1>GLYDRA<br>STUDIO</h1>
-                <p>BEYOND VISUALS</p>
+                <p>PREMIER VISUAL STUDIO</p>
+                <h1>GLYDRA</h1>
+                <p>3D ANIMATION & MOTION DESIGN</p>
             </div>
         </section>
 
-        <section class="gallery-section" id="projects">
-            <h2 class="section-title">SELECTED WORKS</h2>
-            <div id="main-gallery" class="bento-grid">
+        <section id="work" class="container">
+            <h2 style="margin-bottom: 40px;">Selected Films</h2>
+            <div id="main-gallery" class="gallery-grid">
                 </div>
         </section>
 
-        <section class="pricing-section" id="pricing">
-            <div>
-                <h2 class="section-title">PACKAGES</h2>
-                <div class="pricing-grid">
-                    <div class="price-card">
-                        <h4>IGNITE</h4>
-                        <span class="amount">$299</span>
-                        <ul><li>Basic 3D Render</li><li>1 Revision</li><li>7-Day Delivery</li></ul>
+        <section id="pricing" class="container">
+            <div class="pricing-layout">
+                <div class="pricing-tiers">
+                    <div class="tier-card">
+                        <h3>Ignite</h3>
+                        <ul>
+                            <li>15s Product Visual</li>
+                            <li>4K Rendering</li>
+                            <li>Sound Design</li>
+                        </ul>
+                        <p>Perfect for social launches.</p>
                     </div>
-                    <div class="price-card" style="border-color: var(--accent);">
-                        <h4>ELEVATE</h4>
-                        <span class="amount">$599</span>
-                        <ul><li>Full Motion Design</li><li>3 Revisions</li><li>Source Files</li></ul>
+                    <div class="tier-card">
+                        <h3>Elevate</h3>
+                        <ul>
+                            <li>30s Full Showcase</li>
+                            <li>Cinematic Lighting</li>
+                            <li>2 Revision Rounds</li>
+                        </ul>
+                        <p>High-end brand storytelling.</p>
                     </div>
-                    <div class="price-card">
-                        <h4>APEX</h4>
-                        <span class="amount">$999</span>
-                        <ul><li>Cinematic Production</li><li>Unlimited Revisions</li><li>VIP Support</li></ul>
+                    <div class="tier-card">
+                        <h3>Apex</h3>
+                        <ul>
+                            <li>60s Masterpiece</li>
+                            <li>Advanced Simulations</li>
+                            <li>Unlimited Revisions</li>
+                        </ul>
+                        <p>The gold standard.</p>
                     </div>
                 </div>
-            </div>
-            <div class="addons-sidebar">
-                <h3>EXTRA ADD-ONS</h3>
-                <p>+ Raw Files ($100)</p>
-                <p>+ Fast Delivery ($150)</p>
-                <p>+ Commercial Rights ($200)</p>
+                <div class="addons-sidebar">
+                    <h4>EXTRA ADD-ONS</h4>
+                    <p style="font-size: 14px; margin-bottom: 20px;">+ Raw Files Delivery</p>
+                    <p style="font-size: 14px; margin-bottom: 20px;">+ Expedited 48hr Turnaround</p>
+                    <p style="font-size: 14px; margin-bottom: 20px;">+ Multi-format Exports</p>
+                </div>
             </div>
         </section>
 
-        <section class="contact-container" id="contact">
-            <div class="contact-big-text">HAVE A PROJECT?<br>LET'S MAKE MAGIC</div>
-            <div class="contact-methods">
-                <div class="method"><h4>CALL US</h4><p>+20 1286754323</p></div>
-                <div class="method"><h4>EMAIL</h4><p>glydra.studios@gmail.com</p></div>
-            </div>
-            <div class="form-box">
-                <input type="text" id="user-name" placeholder="YOUR NAME">
-                <input type="text" id="user-company" placeholder="COMPANY NAME">
-                <textarea id="user-msg" rows="4" placeholder="PROJECT DETAILS"></textarea>
-                <button class="submit-btn" onclick="sendToWhatsApp()">SEND REQUEST</button>
+        <section id="contact" class="container">
+            <div class="contact-flex">
+                <div>
+                    <h2 class="huge-text">LET'S MAKE MAGIC</h2>
+                    <div class="contact-info">
+                        <a href="tel:+201280022629">+20 128 002 2629</a>
+                        <a href="mailto:glydra.studios.contact@gmail.com">glydra.studios.contact@gmail.com</a>
+                    </div>
+                </div>
+                <div>
+                    <input type="text" id="form-name" placeholder="Name">
+                    <input type="email" placeholder="Email Address">
+                    <textarea id="form-details" rows="5" placeholder="Tell us about your vision..."></textarea>
+                    <button class="submit-btn" onclick="sendWhatsApp()">SEND TO WHATSAPP</button>
+                </div>
             </div>
         </section>
     </main>
 
-    <div id="video-modal" onclick="closeVideo()">
-        <div class="modal-content">
-            <video id="full-player" controls autoplay></video>
-        </div>
+    <div id="video-modal">
+        <div class="modal-close" onclick="closeVideo()">×</div>
+        <video id="modal-video" controls autoplay></video>
     </div>
 
     <div id="admin-panel">
-        <h1 style="color:var(--accent); margin-bottom:40px;">ADMIN HUB / ASSET MANAGER</h1>
-        <div class="admin-grid">
-            <div class="admin-card">
-                <h3>ADD NEW PROJECT</h3>
-                <input type="text" id="v-title" placeholder="Project Title">
-                <input type="text" id="v-type" placeholder="Work Type (e.g. 3D Design)">
-                <input type="text" id="v-thumb" placeholder="Preview MP4 URL">
-                <input type="text" id="v-full" placeholder="Full Film URL">
-                <select id="v-size" style="width:100%; padding:15px; background:transparent; border:1px solid rgba(255,255,255,0.1); color:white; margin-bottom:20px;">
-                    <option value="standard">Standard Box</option>
-                    <option value="wide">Wide (2 Columns)</option>
-                    <option value="tall">Tall (2 Rows)</option>
-                </select>
-                <button class="submit-btn" onclick="uploadProject()" style="width:100%;">DEPLOY TO SITE</button>
-                <button class="submit-btn" onclick="hideAdmin()" style="width:100%; margin-top:10px; background:transparent; color:white; border:1px solid white;">EXIT</button>
+        <div class="admin-card">
+            <h2 style="color: var(--accent); margin-bottom: 30px;">ADMIN HUB v3</h2>
+            <div id="admin-auth">
+                <input type="password" id="admin-pass" placeholder="Enter Access Key">
+                <button class="submit-btn" onclick="checkAdmin()">ACCESS DATABASE</button>
             </div>
-            <div class="admin-card" id="current-projects">
-                <h3>CURRENT ASSETS</h3>
-                </div>
+            <div id="admin-main" style="display: none;">
+                <input type="text" id="v-title" placeholder="Project Title">
+                <textarea id="v-desc" placeholder="Brief Description"></textarea>
+                <input type="text" id="v-preview" placeholder="Preview URL (MP4)">
+                <input type="text" id="v-full" placeholder="Full Film URL (MP4)">
+                <select id="v-layout" style="width:100%; padding:20px; background:var(--glass); color:white; border-radius:15px; margin-bottom:20px;">
+                    <option value="standard">Standard (Square/Auto)</option>
+                    <option value="wide">Wide (16:9 - Bento Focus)</option>
+                    <option value="tall">Tall (9:16 - Bento Focus)</option>
+                </select>
+                <button class="submit-btn" id="save-btn" onclick="handleSave()">DEPLOY PROJECT</button>
+                <div id="admin-list" style="margin-top: 40px;"></div>
+                <button onclick="location.reload()" style="background:transparent; color:gray; border:none; margin-top:20px; cursor:pointer;">Logout</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // FIREBASE INITIALIZATION
+        // Firebase Integration (Keeping your existing config)
         const firebaseConfig = {
             apiKey: "AIzaSyDTVlcGCfeDZD xLjx-j5pPutvm9tpg2wCk",
             authDomain: "glydra-f8004.firebaseapp.com",
@@ -216,83 +271,137 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database().ref('projects');
+        let editingId = null;
 
-        // GSAP CURSOR
-        const cur = document.querySelector('.cursor'), fol = document.querySelector('.cursor-f');
-        window.addEventListener('mousemove', e => {
-            gsap.to(cur, {x: e.clientX, y: e.clientY, duration: 0.1});
-            gsap.to(fol, {x: e.clientX - 15, y: e.clientY - 15, duration: 0.3});
+        // Custom Cursor Logic
+        const cursor = document.getElementById('cursor');
+        const follower = document.getElementById('cursor-follower');
+        
+        window.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0 });
+            gsap.to(follower, { x: e.clientX - 15, y: e.clientY - 15, duration: 0.3 });
         });
 
-        // ADMIN LOGIC
-        function showAdmin() {
-            let pass = prompt("Enter Passkey:");
-            if(pass === "0512") document.getElementById('admin-panel').style.display = 'block';
-        }
-        function hideAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
+        // GSAP Scroll Animations
+        gsap.registerPlugin(ScrollTrigger);
 
-        function uploadProject() {
-            const data = {
-                title: document.getElementById('v-title').value,
-                type: document.getElementById('v-type').value,
-                thumb: document.getElementById('v-thumb').value,
-                full: document.getElementById('v-full').value,
-                size: document.getElementById('v-size').value
-            };
-            db.push(data);
-            alert("Project Live!");
-            location.reload();
+        function initAnimations() {
+            gsap.from(".hero-content h1", { opacity: 0, y: 100, duration: 1.5, ease: "power4.out" });
+            gsap.from(".project-card", { 
+                scrollTrigger: "#work",
+                opacity: 0, y: 50, duration: 1, stagger: 0.2 
+            });
+            gsap.from(".tier-card", {
+                scrollTrigger: "#pricing",
+                opacity: 0, scale: 0.9, duration: 0.8, stagger: 0.2
+            });
         }
 
-        // LOAD PROJECTS (Bento Grid)
+        // Project Handlers
         db.on('value', (snap) => {
-            const container = document.getElementById('main-gallery');
-            const adminList = document.getElementById('current-projects');
-            container.innerHTML = "";
-            adminList.innerHTML = "<h3>CURRENT ASSETS</h3>";
-            
             const data = snap.val();
+            const container = document.getElementById('main-gallery');
+            const adminList = document.getElementById('admin-list');
+            container.innerHTML = "";
+            adminList.innerHTML = "";
+
             if(data) {
-                Object.keys(data).forEach(key => {
-                    const p = data[key];
-                    // Client Side
+                Object.keys(data).forEach(id => {
+                    const p = data[id];
+                    // Render to Front-end Gallery
                     container.insertAdjacentHTML('beforeend', `
-                        <div class="project-card ${p.size}" onclick="openVideo('${p.full}')">
-                            <video autoplay muted loop playsinline><source src="${p.thumb}"></video>
-                            <div class="card-info">
-                                <p>${p.type}</p>
-                                <h3>${p.title}</h3>
+                        <div class="project-card ${p.layout || 'standard'}" onclick="openVideo('${p.full}')">
+                            <video muted loop autoplay playsinline><source src="${p.preview}"></video>
+                            <div class="project-meta">
+                                <h3>${p.name}</h3>
+                                <p style="font-size:12px; opacity:0.6;">${p.desc}</p>
                             </div>
                         </div>
                     `);
-                    // Admin Side
+
+                    // Render to Admin List
                     adminList.insertAdjacentHTML('beforeend', `
-                        <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;">
-                            <span>${p.title}</span>
-                            <button onclick="deleteProject('${key}')" style="color:red; background:none; border:none; cursor:pointer;">DELETE</button>
+                        <div class="project-list-item">
+                            <span>${p.name}</span>
+                            <div>
+                                <button onclick="editProject('${id}')" style="color:orange; background:none; border:none; margin-right:10px;">Edit</button>
+                                <button onclick="deleteProject('${id}')" style="color:red; background:none; border:none;">Delete</button>
+                            </div>
                         </div>
                     `);
                 });
             }
-            gsap.from(".project-card", { opacity: 0, y: 50, stagger: 0.2, scrollTrigger: ".bento-grid" });
+            initAnimations();
         });
 
-        function deleteProject(key) { if(confirm("Delete this work?")) db.child(key).remove(); }
-        function openVideo(url) { 
-            document.getElementById('full-player').src = url;
+        // Functional Logic
+        function openVideo(url) {
+            document.getElementById('modal-video').src = url;
             document.getElementById('video-modal').style.display = 'flex';
         }
-        function closeVideo() { 
+
+        function closeVideo() {
+            const v = document.getElementById('modal-video');
+            v.pause(); v.src = "";
             document.getElementById('video-modal').style.display = 'none';
-            document.getElementById('full-player').src = "";
         }
 
-        function sendToWhatsApp() {
-            const name = document.getElementById('user-name').value;
-            const company = document.getElementById('user-company').value;
-            const msg = document.getElementById('user-msg').value;
-            window.open(`https://wa.me/201280022629?text=Hello Glydra!%0AFrom: ${name} (${company})%0ADetails: ${msg}`);
+        function sendWhatsApp() {
+            const name = document.getElementById('form-name').value;
+            const msg = document.getElementById('form-details').value;
+            window.open(`https://wa.me/201280022629?text=Hello Glydra! My name is ${name}. Project details: ${msg}`, '_blank');
         }
+
+        // Admin Management
+        function openAdmin() { document.getElementById('admin-panel').style.display = 'block'; }
+        
+        async function checkAdmin() {
+            const pass = document.getElementById('admin-pass').value;
+            const snap = await firebase.database().ref('adminConfig/password').once('value');
+            if(pass === (snap.val() || "0512")) {
+                document.getElementById('admin-auth').style.display = 'none';
+                document.getElementById('admin-main').style.display = 'block';
+            } else { alert("Access Denied"); }
+        }
+
+        function handleSave() {
+            const data = {
+                name: document.getElementById('v-title').value,
+                desc: document.getElementById('v-desc').value,
+                preview: document.getElementById('v-preview').value,
+                full: document.getElementById('v-full').value,
+                layout: document.getElementById('v-layout').value
+            };
+
+            if(editingId) {
+                db.child(editingId).update(data);
+                editingId = null;
+                document.getElementById('save-btn').innerText = "DEPLOY PROJECT";
+            } else {
+                db.push(data);
+            }
+            
+            // Clear inputs
+            document.querySelectorAll('#admin-main input, #admin-main textarea').forEach(i => i.value = "");
+            alert("Database Updated Successfully");
+        }
+
+        function editProject(id) {
+            db.child(id).once('value', (snap) => {
+                const p = snap.val();
+                document.getElementById('v-title').value = p.name;
+                document.getElementById('v-desc').value = p.desc;
+                document.getElementById('v-preview').value = p.preview;
+                document.getElementById('v-full').value = p.full;
+                document.getElementById('v-layout').value = p.layout;
+                editingId = id;
+                document.getElementById('save-btn').innerText = "UPDATE PROJECT";
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            });
+        }
+
+        function deleteProject(id) { if(confirm("Permanently delete this project?")) db.child(id).remove(); }
+
     </script>
 </body>
 </html>
